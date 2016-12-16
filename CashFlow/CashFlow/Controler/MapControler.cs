@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
@@ -6,6 +7,7 @@ using Windows.Services.Maps;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Controls.Maps;
+using CashFlow.GameLogic;
 
 namespace CashFlow.Controler
 {
@@ -47,6 +49,30 @@ namespace CashFlow.Controler
             };
 
             MyMap.MapElements.Add(Shape);
+        }
+
+        public void drawBuildingList(List<Building> list)
+        {
+            foreach (Building building in list)
+            {
+                addBuilding(building);
+            }
+        }
+        private void addBuilding(Building building)
+        {
+            var ancherPoint = new Point(0.5, 1);
+            var image =
+                RandomAccessStreamReference.CreateFromUri(
+                    new Uri("ms-appx:///Res/" + building.GetBuidlingType() + building.IsBought()));
+            var BuildingElement = new MapIcon
+            {
+                Title = building.Name,
+                Location = new Geopoint(building.getPosistion()),
+                NormalizedAnchorPoint = ancherPoint,
+                Image = image
+            };
+
+            MyMap.MapElements.Add(BuildingElement);
         }
 
         public void centerMap(BasicGeoposition center)
