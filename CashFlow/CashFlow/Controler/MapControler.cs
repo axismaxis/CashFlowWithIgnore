@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
@@ -17,16 +18,14 @@ namespace CashFlow.Controler
         {
             this.MyMap = myMap;
             Mapinit();
-            centerMap(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 });
-            addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }, "HomePin.png");
-            drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
+            
+            //addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }, "HomePin.png");
+            //drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
 
         }
 
         private void Mapinit()
         {
-
-
             MyMap.ColorScheme = MapColorScheme.Dark;
             MyMap.LandmarksVisible = true;
             MyMap.DesiredPitch = 45;
@@ -53,6 +52,72 @@ namespace CashFlow.Controler
         {
             MyMap.Center = new Geopoint(center);
             MyMap.ZoomLevel = 25;
+        }
+
+        public void centerMap(Geoposition center)
+        {
+            MyMap.Center = center.Coordinate.Point;
+            MyMap.ZoomLevel = 25;
+        }
+
+        public void DrawCircle(BasicGeoposition CenterPosition, int Radius)
+        {
+            Color FillColor = Colors.Purple;
+            Color StrokeColor = Colors.Red;
+            FillColor.A = 80;
+            StrokeColor.A = 80;
+            var Circle = new MapPolygon
+            {
+                StrokeThickness = 2,
+                FillColor = FillColor,
+                StrokeColor = StrokeColor,
+                Path = new Geopath(CalculateCircle(CenterPosition, Radius))
+            };
+            MyMap.MapElements.Add(Circle);
+        }
+
+        public void DrawCircle(Geoposition newPos, int Radius)
+        {
+            BasicGeoposition CenterPosition = newPos.Coordinate.Point.Position;
+            Color FillColor = Colors.Purple;
+            Color StrokeColor = Colors.Red;
+            FillColor.A = 80;
+            StrokeColor.A = 80;
+            var Circle = new MapPolygon
+            {
+                StrokeThickness = 2,
+                FillColor = FillColor,
+                StrokeColor = StrokeColor,
+                Path = new Geopath(CalculateCircle(CenterPosition, Radius))
+            };
+            MyMap.MapElements.Add(Circle);
+        }
+
+        const double earthRadius = 6371000D;
+        const double Circumference = 2D * Math.PI * earthRadius;
+
+        private static List<BasicGeoposition> CalculateCircle(BasicGeoposition Position, double Radius)
+        {
+            List<BasicGeoposition> GeoPositions = new List<BasicGeoposition>();
+            for (int i = 0; i <= 360; i++)
+            {
+                double Bearing = ToRad(i);
+                double CircumferenceLatitudeCorrected = 2D * Math.PI * Math.Cos(ToRad(Position.Latitude)) * earthRadius;
+                double lat1 = Circumference / 360D * Position.Latitude;
+                double lon1 = CircumferenceLatitudeCorrected / 360D * Position.Longitude;
+                double lat2 = lat1 + Math.Sin(Bearing) * Radius;
+                double lon2 = lon1 + Math.Cos(Bearing) * Radius;
+                BasicGeoposition NewBasicPosition = new BasicGeoposition();
+                NewBasicPosition.Latitude = lat2 / (Circumference / 360D);
+                NewBasicPosition.Longitude = lon2 / (CircumferenceLatitudeCorrected / 360D);
+                GeoPositions.Add(NewBasicPosition);
+            }
+            return GeoPositions;
+        }
+
+        private static double ToRad(double degrees)
+        {
+            return degrees * (Math.PI / 180D);
         }
 
         public async void drawRoute(Geopoint pointA, Geopoint pointB)
