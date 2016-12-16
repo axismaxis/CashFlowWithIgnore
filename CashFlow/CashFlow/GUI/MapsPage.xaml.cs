@@ -29,5 +29,10 @@ namespace CashFlow.GUI
             this.InitializeComponent();
             Controler = new MapControler(MyMap);
         }
+
+        private void HamburgerButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            SplitView.IsPaneOpen = !SplitView.IsPaneOpen;
+        }
     }
 }
