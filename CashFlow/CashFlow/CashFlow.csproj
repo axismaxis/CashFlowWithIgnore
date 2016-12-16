@@ -111,7 +111,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controler\StorageControler.cs" />
     <Compile Include="Storage\JSONSave.cs" />
-    <Compile Include="TestClasses\SaveSystemTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
