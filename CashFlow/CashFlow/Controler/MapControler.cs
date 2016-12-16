@@ -63,7 +63,7 @@ namespace CashFlow.Controler
             var ancherPoint = new Point(0.5, 1);
             var image =
                 RandomAccessStreamReference.CreateFromUri(
-                    new Uri("ms-appx:///Res/" + building.GetBuidlingType() + building.IsBought()));
+                    new Uri("ms-appx:///Res/" + building.GetBuidlingType() + building.IsBought()+".png"));
             var BuildingElement = new MapIcon
             {
                 Title = building.Name,
