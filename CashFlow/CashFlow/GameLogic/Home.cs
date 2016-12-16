@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Devices.Geolocation;
 
 namespace CashFlow.GameLogic
 {
@@ -19,9 +20,33 @@ namespace CashFlow.GameLogic
             throw new System.NotImplementedException();
         }
 
+        public override BasicGeoposition getPosistion()
+        {
+            return Posistion;
+        }
+
+        public override Enum GetBuidlingType()
+        {
+            return BuildingType.HomeType;
+        }
+
+        public override bool IsBought()
+        {
+            return true;
+        }
+
         public void ChangeName(String name)
         {
             Name = name;
+            //write to saveFile
         }
+
+        public void setPosition(BasicGeoposition position)
+        {
+            this.Posistion = position;
+            //write to saveFIle
+        }
+            
+    
     }
 }

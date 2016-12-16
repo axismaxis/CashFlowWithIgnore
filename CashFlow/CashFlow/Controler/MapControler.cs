@@ -7,6 +7,7 @@ using Windows.Services.Maps;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Controls.Maps;
+using CashFlow.GameLogic;
 
 namespace CashFlow.Controler
 {
@@ -19,7 +20,7 @@ namespace CashFlow.Controler
             this.MyMap = myMap;
             Mapinit();
             
-            //addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }, "HomePin.png");
+            addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomePin.png");
             //drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
 
         }
@@ -46,6 +47,30 @@ namespace CashFlow.Controler
             };
 
             MyMap.MapElements.Add(Shape);
+        }
+
+        public void drawBuildingList(List<Building> list)
+        {
+            foreach (Building building in list)
+            {
+                addBuilding(building);
+            }
+        }
+        private void addBuilding(Building building)
+        {
+            var ancherPoint = new Point(0.5, 1);
+            var image =
+                RandomAccessStreamReference.CreateFromUri(
+                    new Uri("ms-appx:///Res/" + building.GetBuidlingType() + building.IsBought()+".png"));
+            var BuildingElement = new MapIcon
+            {
+                Title = building.Name,
+                Location = new Geopoint(building.getPosistion()),
+                NormalizedAnchorPoint = ancherPoint,
+                Image = image
+            };
+
+            MyMap.MapElements.Add(BuildingElement);
         }
 
         public void centerMap(BasicGeoposition center)
