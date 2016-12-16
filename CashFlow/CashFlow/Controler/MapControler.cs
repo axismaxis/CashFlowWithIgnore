@@ -30,6 +30,7 @@ namespace CashFlow.Controler
             MyMap.ColorScheme = MapColorScheme.Dark;
             MyMap.LandmarksVisible = true;
             MyMap.DesiredPitch = 45;
+            MyMap.ZoomLevel = 18;
         }
 
 
@@ -76,13 +77,13 @@ namespace CashFlow.Controler
         public void centerMap(BasicGeoposition center)
         {
             MyMap.Center = new Geopoint(center);
-            MyMap.ZoomLevel = 25;
+            //MyMap.ZoomLevel = 25;
         }
 
         public void centerMap(Geoposition center)
         {
             MyMap.Center = center.Coordinate.Point;
-            MyMap.ZoomLevel = 25;
+           // MyMap.ZoomLevel = 25;
         }
 
         public void DrawCircle(BasicGeoposition CenterPosition, int Radius)
