@@ -18,7 +18,7 @@ namespace CashFlow.Controler
             this.MyMap = myMap;
             Mapinit();
             centerMap(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 });
-            addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }, "HomePin.png");
+            addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomePin.png");
             drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
 
         }
