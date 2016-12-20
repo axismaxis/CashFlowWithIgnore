@@ -28,7 +28,8 @@ namespace CashFlow.Controler
             this.MyMap = myMap;
             
             addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomeTypetrue.png");
-            getJSONBuildings();
+            //getJSONBuildings();
+            test();
             drawBuildingList(buildingList);
             //drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
 
