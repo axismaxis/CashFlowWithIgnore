@@ -11,6 +11,7 @@ using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls.Maps;
+using CashFlow.Storage;
 
 namespace CashFlow.Controler
 {
@@ -20,6 +21,7 @@ namespace CashFlow.Controler
 
         //Keeps track of element that represents the player
         private MapPolygon playerCircle;
+        List<Building> buildingList = new List<Building>();
 
         public MapController(MapControl myMap)
         {
