@@ -15,5 +15,38 @@
                          TiltInteractionMode="GestureAndControl"
                          RotateInteractionMode="GestureAndControl"
                          />
+        <Grid >
+            <Button  Click="HamburgerButton_OnClick" Padding="0" Height="60" BorderBrush="Transparent" Background="Transparent" Name="HamburgerButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20">
+                <Image Source="../Res/hamburgerButton.png" HorizontalAlignment="Left" VerticalAlignment="Top" />
+            </Button>
+            
+            <SplitView Grid.Row="1" Name="SplitView" DisplayMode="CompactOverlay" OpenPaneLength="285" CompactPaneLength="0" HorizontalAlignment="Left" Width="360">
+                <SplitView.Pane>
+                    <ListBox  Name="hueListBox" SelectionMode="Single"  UseLayoutRounding="True" HorizontalAlignment="Left" >
+                        <ListBoxItem Name="listBoxLocal">
+                            <StackPanel Orientation="Horizontal" Height="60">
+                                <TextBlock FontSize="42" Text="💡"/>
+                                <TextBlock FontSize="24" Text="  HUE Locathost" Margin="0,16,0,0"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Name="ListBoxBeganeGrond">
+                            <StackPanel Orientation="Horizontal" Height="60">
+                                <TextBlock FontSize="42" Text="💡"/>
+                                <TextBlock FontSize="24" Text="  HUE Begane Grond" Margin="0,16,0,0"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem Name="ListBoxVerdieping1">
+                            <StackPanel Orientation="Horizontal" Height="60">
+                                <TextBlock FontSize="42" Text="💡"/>
+                                <TextBlock FontSize="24" Text="  HUE Verdieping 1" Margin="0,16,0,0"/>
+                            </StackPanel>
+                        </ListBoxItem>
+                    </ListBox>
+                </SplitView.Pane>
+                </SplitView>
+
+
+        </Grid>
     </Grid>
 </Page>
+

@@ -8,6 +8,7 @@ using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.GameLogic;
+using CashFlow.Storage;
 
 namespace CashFlow.Controler
 {
@@ -23,7 +24,8 @@ namespace CashFlow.Controler
             this.MyMap = myMap;
             Mapinit();
             
-            addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomePin.png");
+            addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomeTypetrue.png");
+            test();
             //drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
 
         }
@@ -33,6 +35,7 @@ namespace CashFlow.Controler
             MyMap.ColorScheme = MapColorScheme.Dark;
             MyMap.LandmarksVisible = true;
             MyMap.DesiredPitch = 45;
+           // MyMap.ZoomLevel = 18;
         }
 
 
@@ -61,11 +64,10 @@ namespace CashFlow.Controler
         {
             foreach (Building building in list)
             {
-                addBuilding(building);
+                AddBuilding(building);
             }
         }
-
-        private void addBuilding(Building building)
+        private void AddBuilding(Building building)
         {
             var ancherPoint = new Point(0.5, 1);
             var image =
@@ -85,13 +87,13 @@ namespace CashFlow.Controler
         public void centerMap(BasicGeoposition center)
         {
             MyMap.Center = new Geopoint(center);
-            MyMap.ZoomLevel = 25;
+            //MyMap.ZoomLevel = 25;
         }
 
         public void centerMap(Geoposition center)
         {
             MyMap.Center = center.Coordinate.Point;
-            MyMap.ZoomLevel = 25;
+           // MyMap.ZoomLevel = 25;
         }
 
         public void DrawPlayer(Geoposition newPos, int Radius)
@@ -181,6 +183,35 @@ namespace CashFlow.Controler
             {
                 Debug.WriteLine("route no succes");
             }
+        }
+
+        public async void test()
+        {
+
+            List<Building> list = fillTest();
+            JsonSave.saveBuildingdata(list);
+
+           // list = await JsonSave.getBuildingList();
+
+            drawBuildingList(list);
+
+        }
+
+        public List<Building> fillTest()
+        {
+            List<Building> list = new List<Building>();
+            Building Building1 = new Wonder("Kerk van Breda");
+            Building1.Bought = true;
+            Building1.Posistion = new BasicGeoposition{Longitude = 4.7752340, Latitude = 51.5890150};
+            list.Add(Building1);
+
+
+            Building Building2 = new Monument("Chasse theater");
+            Building2.Bought = false;
+            Building2.Posistion = new BasicGeoposition { Longitude = 4.7818280, Latitude = 51.5873440 };
+            list.Add(Building2);
+
+            return list;
         }
     }
 }

@@ -71,5 +71,10 @@ namespace CashFlow.GUI
 
             positionSet = true;
         }
+
+        private void HamburgerButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            SplitView.IsPaneOpen = !SplitView.IsPaneOpen;
+        }
     }
 }

@@ -127,6 +127,7 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Res\hamburgerButton.png" />
     <Content Include="Res\HomeSymbol.png" />
     <Content Include="Res\HomeTypetrue.png" />
     <Content Include="Res\HouseTypetrue.png" />
