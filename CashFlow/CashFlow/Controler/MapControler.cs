@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Services.Maps;
@@ -15,14 +16,15 @@ namespace CashFlow.Controler
     public class MapControler
     {
         private MapControl MyMap;
-
+        List<Building> buildingList = new List<Building>();
         public MapControler(MapControl myMap)
         {
             this.MyMap = myMap;
             Mapinit();
             
             addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomeTypetrue.png");
-            test();
+            getJSONBuildings();
+            drawBuildingList(buildingList);
             //drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
 
         }
@@ -31,8 +33,8 @@ namespace CashFlow.Controler
         {
             MyMap.ColorScheme = MapColorScheme.Dark;
             MyMap.LandmarksVisible = true;
-            MyMap.DesiredPitch = 45;
-           // MyMap.ZoomLevel = 18;
+            MyMap.DesiredPitch = 65;
+            MyMap.ZoomLevel = 17;
         }
 
 
@@ -52,8 +54,14 @@ namespace CashFlow.Controler
             MyMap.MapElements.Add(Shape);
         }
 
+        public async void getJSONBuildings()
+        {
+            buildingList = await JsonSave.getBuildingList();
+        }
+
         public void drawBuildingList(List<Building> list)
         {
+
             foreach (Building building in list)
             {
                 AddBuilding(building);
@@ -167,11 +175,10 @@ namespace CashFlow.Controler
 
         public async void test()
         {
-
             List<Building> list = fillTest();
             JsonSave.saveBuildingdata(list);
-
-           // list = await JsonSave.getBuildingList();
+        
+            list = await JsonSave.getBuildingList();
 
             drawBuildingList(list);
 
@@ -180,17 +187,34 @@ namespace CashFlow.Controler
         public List<Building> fillTest()
         {
             List<Building> list = new List<Building>();
-            Building Building1 = new Wonder("Kerk van Breda");
-            Building1.Bought = true;
-            Building1.Posistion = new BasicGeoposition{Longitude = 4.7752340, Latitude = 51.5890150};
-            list.Add(Building1);
+
+            list.Add(new Wonder(
+                "Kerk van Breda",
+                12000000,
+                123,
+                new BasicGeoposition {Longitude = 4.7752340, Latitude = 51.5890150},
+                true
+
+            ));
+
+            list.Add(new Monument(
+                "Chasse theater",
+                500000,
+                123,
+                new BasicGeoposition { Longitude = 4.7818280, Latitude = 51.5873440 },
+                false
+                ));
+
+            list.Add(new House(
+                "keizerstraat 45",
+                190000,
+                123,
+                new BasicGeoposition {Latitude = 51.5849670, Longitude = 4.7788590},
+                true 
 
 
-            Building Building2 = new Monument("Chasse theater");
-            Building2.Bought = false;
-            Building2.Posistion = new BasicGeoposition { Longitude = 4.7818280, Latitude = 51.5873440 };
-            list.Add(Building2);
 
+                ));
             return list;
         }
     }

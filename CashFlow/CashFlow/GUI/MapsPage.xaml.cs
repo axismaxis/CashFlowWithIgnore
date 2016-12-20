@@ -50,7 +50,7 @@ namespace CashFlow.GUI
                     Geoposition pos = await geolocator.GetGeopositionAsync();
                     await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
-                        mapController.centerMap(pos);
+                       mapController.centerMap(pos);
                     });
                     break;
                 case GeolocationAccessStatus.Denied:
@@ -65,7 +65,7 @@ namespace CashFlow.GUI
         {
             await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
              {
-                 mapController.centerMap(args.Position);
+                 //mapController.centerMap(args.Position);
                  mapController.DrawCircle(args.Position, 50);
              });
 

@@ -1,13 +1,22 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 
 namespace CashFlow.GameLogic
 {
+    [DataContract]
     public class Home : Building
     {
-        public Home(string name) : base(name)
+
+
+        public Home(string name, double price, double earnings, BasicGeoposition position, bool isBought) : base(name)
         {
+            base.price = price;
+            EarningsP_S = earnings;
+            Posistion = position;
+            Bought = isBought;
             Name = name;
+            type = BuildingType.HomeType;
         }
 
         public override double getPrice()
