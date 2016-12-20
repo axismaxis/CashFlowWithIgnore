@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Services.Maps;
@@ -9,6 +8,7 @@ using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.GameLogic;
+using CashFlow.Storage;
 
 namespace CashFlow.Controler
 {
@@ -25,8 +25,7 @@ namespace CashFlow.Controler
             Mapinit();
             
             addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomeTypetrue.png");
-            getJSONBuildings();
-            drawBuildingList(buildingList);
+            test();
             //drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
 
         }
@@ -35,8 +34,8 @@ namespace CashFlow.Controler
         {
             MyMap.ColorScheme = MapColorScheme.Dark;
             MyMap.LandmarksVisible = true;
-            MyMap.DesiredPitch = 65;
-            MyMap.ZoomLevel = 17;
+            MyMap.DesiredPitch = 45;
+           // MyMap.ZoomLevel = 18;
         }
 
 
@@ -56,11 +55,6 @@ namespace CashFlow.Controler
             MyMap.MapElements.Add(Shape);
         }
 
-        public async void getJSONBuildings()
-        {
-            buildingList = await JsonSave.getBuildingList();
-        }
-
         public void clearMapMarkers()
         {
             MyMap.MapElements.Clear();
@@ -70,11 +64,15 @@ namespace CashFlow.Controler
         {
             foreach (Building building in list)
             {
-                addBuilding(building);
+                AddBuilding(building);
             }
         }
+<<<<<<< HEAD
 
         private void addBuilding(Building building)
+=======
+        private void AddBuilding(Building building)
+>>>>>>> 31c66559a38f7e26d79c44da0ede38ac34b14078
         {
             var ancherPoint = new Point(0.5, 1);
             var image =
@@ -94,13 +92,13 @@ namespace CashFlow.Controler
         public void centerMap(BasicGeoposition center)
         {
             MyMap.Center = new Geopoint(center);
-            MyMap.ZoomLevel = 25;
+            //MyMap.ZoomLevel = 25;
         }
 
         public void centerMap(Geoposition center)
         {
             MyMap.Center = center.Coordinate.Point;
-            MyMap.ZoomLevel = 25;
+           // MyMap.ZoomLevel = 25;
         }
 
         public void DrawPlayer(Geoposition newPos, int Radius)
@@ -109,13 +107,13 @@ namespace CashFlow.Controler
             {
                 MyMap.MapElements.Remove(playerCircle);
             }
+
             
             BasicGeoposition CenterPosition = newPos.Coordinate.Point.Position;
             Color FillColor = Colors.Purple;
             Color StrokeColor = Colors.Red;
             FillColor.A = 80;
             StrokeColor.A = 80;
-        
             playerCircle = new MapPolygon
             {
                 StrokeThickness = 2,
@@ -194,10 +192,11 @@ namespace CashFlow.Controler
 
         public async void test()
         {
+
             List<Building> list = fillTest();
             JsonSave.saveBuildingdata(list);
-        
-            list = await JsonSave.getBuildingList();
+
+           // list = await JsonSave.getBuildingList();
 
             drawBuildingList(list);
 
@@ -206,34 +205,17 @@ namespace CashFlow.Controler
         public List<Building> fillTest()
         {
             List<Building> list = new List<Building>();
-
-            list.Add(new Wonder(
-                "Kerk van Breda",
-                12000000,
-                123,
-                new BasicGeoposition {Longitude = 4.7752340, Latitude = 51.5890150},
-                true
-
-            ));
-
-            list.Add(new Monument(
-                "Chasse theater",
-                500000,
-                123,
-                new BasicGeoposition { Longitude = 4.7818280, Latitude = 51.5873440 },
-                false
-                ));
-
-            list.Add(new House(
-                "keizerstraat 45",
-                190000,
-                123,
-                new BasicGeoposition {Latitude = 51.5849670, Longitude = 4.7788590},
-                true 
+            Building Building1 = new Wonder("Kerk van Breda");
+            Building1.Bought = true;
+            Building1.Posistion = new BasicGeoposition{Longitude = 4.7752340, Latitude = 51.5890150};
+            list.Add(Building1);
 
 
+            Building Building2 = new Monument("Chasse theater");
+            Building2.Bought = false;
+            Building2.Posistion = new BasicGeoposition { Longitude = 4.7818280, Latitude = 51.5873440 };
+            list.Add(Building2);
 
-                ));
             return list;
         }
     }
