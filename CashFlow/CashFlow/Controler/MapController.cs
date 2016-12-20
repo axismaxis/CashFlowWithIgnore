@@ -1,34 +1,35 @@
-﻿using System;
+﻿using CashFlow.GameLogic;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Windows.ApplicationModel.Core;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Services.Maps;
 using Windows.Storage.Streams;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls.Maps;
-using CashFlow.GameLogic;
 
 namespace CashFlow.Controler
 {
-    public class MapControler
+    public class MapController
     {
         private MapControl MyMap;
 
         //Keeps track of element that represents the player
         private MapPolygon playerCircle;
 
-        public MapControler(MapControl myMap)
+        public MapController(MapControl myMap)
         {
             this.MyMap = myMap;
-            Mapinit();
             
             addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomePin.png");
             //drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
 
         }
 
-        private void Mapinit()
+        public void InitMap()
         {
             MyMap.ColorScheme = MapColorScheme.Dark;
             MyMap.LandmarksVisible = true;
@@ -85,36 +86,49 @@ namespace CashFlow.Controler
         public void centerMap(BasicGeoposition center)
         {
             MyMap.Center = new Geopoint(center);
-            MyMap.ZoomLevel = 25;
         }
 
         public void centerMap(Geoposition center)
         {
             MyMap.Center = center.Coordinate.Point;
-            MyMap.ZoomLevel = 25;
         }
 
-        public void DrawPlayer(Geoposition newPos, int Radius)
+        /// <summary>
+        /// Zooms the map
+        /// </summary>
+        /// <param name="zoomLvl">Int between 1-20 for zoomlevels</param>
+        public void ZoomMap(int zoomLvl)
         {
-            if(MyMap.MapElements.Contains(playerCircle))
+            MyMap.ZoomLevel = zoomLvl;
+        }
+
+        public void drawPlayer(Geoposition drawLocation)
+        {
+            deletePlayerFromMapList(MyMap);
+
+                Color FillColor = Colors.Blue;
+                Color StrokeColor = Colors.Black;
+                FillColor.A = 255;
+                StrokeColor.A = 255;
+                playerCircle = new MapPolygon
+                {
+                    StrokeThickness = 2,
+                    FillColor = FillColor,
+                    StrokeColor = StrokeColor,
+                    Path = new Geopath(CalculateCircle(drawLocation.Coordinate.Point.Position, 10)),
+                    ZIndex = 100
+                };
+                MyMap.MapElements.Add(playerCircle);
+                centerMap(drawLocation);
+
+        }
+
+        private void deletePlayerFromMapList(MapControl myMap)
+        {
+            while (myMap.MapElements.Contains(playerCircle))
             {
-                MyMap.MapElements.Remove(playerCircle);
+                myMap.MapElements.Remove(playerCircle);
             }
-            
-            BasicGeoposition CenterPosition = newPos.Coordinate.Point.Position;
-            Color FillColor = Colors.Purple;
-            Color StrokeColor = Colors.Red;
-            FillColor.A = 80;
-            StrokeColor.A = 80;
-        
-            playerCircle = new MapPolygon
-            {
-                StrokeThickness = 2,
-                FillColor = FillColor,
-                StrokeColor = StrokeColor,
-                Path = new Geopath(CalculateCircle(CenterPosition, Radius))
-            };
-            MyMap.MapElements.Add(playerCircle);
         }
 
         public void DrawCircle(BasicGeoposition CenterPosition, int Radius)

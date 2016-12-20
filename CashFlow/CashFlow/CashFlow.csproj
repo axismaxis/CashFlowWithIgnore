@@ -92,7 +92,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controler\MapControler.cs" />
+    <Compile Include="Controler\MapController.cs" />
     <Compile Include="Acount\AccountInfo.cs" />
     <Compile Include="GameLogic\Building.cs" />
     <Compile Include="GameLogic\Home.cs" />
@@ -101,6 +101,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GPS\GPSHandler.cs" />
     <Compile Include="GUI\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
