@@ -1,13 +1,22 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 
 namespace CashFlow.GameLogic
 {
+    [DataContract]
     public class Wonder :Building
     {
-        public Wonder(string name) : base(name)
+
+
+        public Wonder(string name, double price, double earnings, BasicGeoposition position, bool isBought) : base(name)
         {
+            base.price = price;
+            EarningsP_S = earnings;
+            Posistion = position;
+            Bought = isBought;
             Name = name;
+            type = BuildingType.WonderType;
         }
 
         public override double getPrice()

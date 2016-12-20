@@ -2,8 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+<<<<<<< HEAD:CashFlow/CashFlow/Controler/MapController.cs
 using Windows.ApplicationModel.Core;
+=======
 using System.Runtime.Serialization;
+>>>>>>> 357aaea77b85e044e82cb38c17042491bdd9c96a:CashFlow/CashFlow/Controler/MapControler.cs
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Services.Maps;
