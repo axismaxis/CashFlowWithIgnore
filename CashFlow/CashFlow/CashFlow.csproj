@@ -94,6 +94,7 @@
   <ItemGroup>
     <Compile Include="Controler\MapController.cs" />
     <Compile Include="Acount\AccountInfo.cs" />
+    <Compile Include="Controler\MapIconHelper.cs" />
     <Compile Include="GameLogic\Building.cs" />
     <Compile Include="GameLogic\Home.cs" />
     <Compile Include="GameLogic\Monument.cs" />

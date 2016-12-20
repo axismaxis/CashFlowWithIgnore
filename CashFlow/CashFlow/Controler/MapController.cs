@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Windows.ApplicationModel.Core;
 using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
@@ -10,6 +11,8 @@ using Windows.Services.Maps;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.Storage;
 
@@ -26,7 +29,7 @@ namespace CashFlow.Controler
         public MapController(MapControl myMap)
         {
             this.MyMap = myMap;
-            
+
             addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomeTypetrue.png");
             //getJSONBuildings();
             test();
@@ -83,7 +86,7 @@ namespace CashFlow.Controler
             var ancherPoint = new Point(0.5, 1);
             var image =
                 RandomAccessStreamReference.CreateFromUri(
-                    new Uri("ms-appx:///Res/" + building.GetBuidlingType() + building.IsBought()+".png"));
+                    new Uri("ms-appx:///Res/" + building.GetBuidlingType() + building.IsBought() + ".png"));
             var BuildingElement = new MapIcon
             {
                 Title = building.Name,
@@ -91,7 +94,7 @@ namespace CashFlow.Controler
                 NormalizedAnchorPoint = ancherPoint,
                 Image = image
             };
-
+            BuildingElement.AddData(building);
             MyMap.MapElements.Add(BuildingElement);
         }
 
@@ -118,20 +121,20 @@ namespace CashFlow.Controler
         {
             deletePlayerFromMapList(MyMap);
 
-                Color FillColor = Colors.Blue;
-                Color StrokeColor = Colors.Black;
-                FillColor.A = 255;
-                StrokeColor.A = 255;
-                playerCircle = new MapPolygon
-                {
-                    StrokeThickness = 2,
-                    FillColor = FillColor,
-                    StrokeColor = StrokeColor,
-                    Path = new Geopath(CalculateCircle(drawLocation.Coordinate.Point.Position, 10)),
-                    ZIndex = 100
-                };
-                MyMap.MapElements.Add(playerCircle);
-                centerMap(drawLocation);
+            Color FillColor = Colors.Blue;
+            Color StrokeColor = Colors.Black;
+            FillColor.A = 255;
+            StrokeColor.A = 255;
+            playerCircle = new MapPolygon
+            {
+                StrokeThickness = 2,
+                FillColor = FillColor,
+                StrokeColor = StrokeColor,
+                Path = new Geopath(CalculateCircle(drawLocation.Coordinate.Point.Position, 10)),
+                ZIndex = 100
+            };
+            MyMap.MapElements.Add(playerCircle);
+            centerMap(drawLocation);
 
         }
 
@@ -209,11 +212,23 @@ namespace CashFlow.Controler
             }
         }
 
+
+        public async void onMapElementCLick(MapControl sender, MapElementClickEventArgs args)
+        {
+            MapIcon myClickedIcon = args.MapElements.FirstOrDefault(x => x is MapIcon) as MapIcon;
+
+            Building ClickedBuilding = myClickedIcon.ReadData();
+
+            var dialog = new MessageDialog(
+                ClickedBuilding.type + "\r" + ClickedBuilding.price + "\r" + ClickedBuilding.EarningsP_S + "\r" + "gekocht: " + ClickedBuilding.Bought, ClickedBuilding.Name );
+            await dialog.ShowAsync();
+        }
+
         public async void test()
         {
             List<Building> list = fillTest();
             JsonSave.saveBuildingdata(list);
-        
+
             list = await JsonSave.getBuildingList();
 
             drawBuildingList(list);
@@ -228,7 +243,7 @@ namespace CashFlow.Controler
                 "Kerk van Breda",
                 12000000,
                 123,
-                new BasicGeoposition {Longitude = 4.7752340, Latitude = 51.5890150},
+                new BasicGeoposition { Longitude = 4.7752340, Latitude = 51.5890150 },
                 true
 
             ));
@@ -245,8 +260,8 @@ namespace CashFlow.Controler
                 "keizerstraat 45",
                 190000,
                 123,
-                new BasicGeoposition {Latitude = 51.5849670, Longitude = 4.7788590},
-                true 
+                new BasicGeoposition { Latitude = 51.5849670, Longitude = 4.7788590 },
+                true
 
 
 
