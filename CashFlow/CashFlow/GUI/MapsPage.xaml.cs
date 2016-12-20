@@ -65,7 +65,7 @@ namespace CashFlow.GUI
             {
                 mapController.centerMap(newPosition);
                 mapController.ZoomMap(17);
-                mapController.drawPlayer(newPosition);
+                mapController.DrawPlayer(newPosition);
             });
         }
 
@@ -76,7 +76,7 @@ namespace CashFlow.GUI
 
         private void MyMap_OnMapElementClick(MapControl sender, MapElementClickEventArgs args)
         {
-            mapController.onMapElementCLick(sender, args);
+            mapController.OnMapElementCLick(sender, args);
         }
     }
 }

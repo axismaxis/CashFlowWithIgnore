@@ -20,39 +20,39 @@ namespace CashFlow.Controler
 {
     public class MapController
     {
-        private MapControl MyMap;
+        private readonly MapControl _myMap;
 
         //Keeps track of element that represents the player
-        private MapPolygon playerCircle;
-        List<Building> buildingList = new List<Building>();
+        private MapPolygon _playerCircle;
+        List<Building> _buildingList = new List<Building>();
 
         public MapController(MapControl myMap)
         {
-            this.MyMap = myMap;
+            this._myMap = myMap;
 
-            addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomeTypetrue.png");
+            AddMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomeTypetrue.png");
             //getJSONBuildings();
-            test();
-            drawBuildingList(buildingList);
+            Test();
+            DrawBuildingList(_buildingList);
             //drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
 
         }
 
         public void InitMap()
         {
-            MyMap.ColorScheme = MapColorScheme.Dark;
-            MyMap.LandmarksVisible = true;
-            MyMap.DesiredPitch = 65;
-            MyMap.ZoomLevel = 17;
+            _myMap.ColorScheme = MapColorScheme.Dark;
+            _myMap.LandmarksVisible = true;
+            _myMap.DesiredPitch = 65;
+            _myMap.ZoomLevel = 17;
         }
 
 
-        public void addMapElement(string title, BasicGeoposition posistion, string imgName)
+        public void AddMapElement(string title, BasicGeoposition posistion, string imgName)
         {
             var ancherPoint = new Point(0.5, 1);
             var image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Res/" + imgName));
 
-            var Shape = new MapIcon
+            var shape = new MapIcon
             {
                 Title = title,
                 Location = new Geopoint(posistion),
@@ -60,34 +60,34 @@ namespace CashFlow.Controler
                 Image = image
             };
 
-            MyMap.MapElements.Add(Shape);
+            _myMap.MapElements.Add(shape);
         }
 
-        public async void getJSONBuildings()
+        public async void GetJsonBuildings()
         {
-            buildingList = await JsonSave.getBuildingList();
+            _buildingList = await JsonSave.getBuildingList();
         }
 
-        public void clearMapMarkers()
+        public void ClearMapMarkers()
         {
-            MyMap.MapElements.Clear();
+            _myMap.MapElements.Clear();
         }
 
-        public void drawBuildingList(List<Building> list)
+        public void DrawBuildingList(List<Building> list)
         {
             foreach (Building building in list)
             {
-                addBuilding(building);
+                AddBuilding(building);
             }
         }
 
-        private void addBuilding(Building building)
+        private void AddBuilding(Building building)
         {
             var ancherPoint = new Point(0.5, 1);
             var image =
                 RandomAccessStreamReference.CreateFromUri(
                     new Uri("ms-appx:///Res/" + building.GetBuidlingType() + building.IsBought() + ".png"));
-            var BuildingElement = new MapIcon
+            var buildingElement = new MapIcon
             {
                 Title = building.Name,
                 Location = new Geopoint(building.getPosistion()),
@@ -95,18 +95,18 @@ namespace CashFlow.Controler
                 Image = image,
                 ZIndex = 20
             };
-            BuildingElement.AddData(building);
-            MyMap.MapElements.Add(BuildingElement);
+            buildingElement.AddData(building);
+            _myMap.MapElements.Add(buildingElement);
         }
 
         public void centerMap(BasicGeoposition center)
         {
-            MyMap.Center = new Geopoint(center);
+            _myMap.Center = new Geopoint(center);
         }
 
         public void centerMap(Geoposition center)
         {
-            MyMap.Center = center.Coordinate.Point;
+            _myMap.Center = center.Coordinate.Point;
         }
 
         /// <summary>
@@ -115,70 +115,70 @@ namespace CashFlow.Controler
         /// <param name="zoomLvl">Int between 1-20 for zoomlevels</param>
         public void ZoomMap(int zoomLvl)
         {
-            MyMap.ZoomLevel = zoomLvl;
+            _myMap.ZoomLevel = zoomLvl;
         }
 
-        public void drawPlayer(Geoposition drawLocation)
+        public void DrawPlayer(Geoposition drawLocation)
         {
-            deletePlayerFromMapList(MyMap);
+            DeletePlayerFromMapList(_myMap);
 
-            Color FillColor = Colors.Blue;
-            Color StrokeColor = Colors.Black;
-            FillColor.A = 255;
-            StrokeColor.A = 255;
-            playerCircle = new MapPolygon
+            Color fillColor = Colors.Blue;
+            Color strokeColor = Colors.Black;
+            fillColor.A = 255;
+            strokeColor.A = 255;
+            _playerCircle = new MapPolygon
             {
                 StrokeThickness = 2,
-                FillColor = FillColor,
-                StrokeColor = StrokeColor,
+                FillColor = fillColor,
+                StrokeColor = strokeColor,
                 Path = new Geopath(CalculateCircle(drawLocation.Coordinate.Point.Position, 10)),
                 ZIndex = 5
             };
-            MyMap.MapElements.Add(playerCircle);
+            _myMap.MapElements.Add(_playerCircle);
             centerMap(drawLocation);
 
         }
 
-        private void deletePlayerFromMapList(MapControl myMap)
+        private void DeletePlayerFromMapList(MapControl myMap)
         {
-            while (myMap.MapElements.Contains(playerCircle))
+            while (myMap.MapElements.Contains(_playerCircle))
             {
-                myMap.MapElements.Remove(playerCircle);
+                myMap.MapElements.Remove(_playerCircle);
             }
         }
 
         public void DrawCircle(BasicGeoposition CenterPosition, int Radius)
         {
-            Color FillColor = Colors.Purple;
-            Color StrokeColor = Colors.Red;
-            FillColor.A = 80;
-            StrokeColor.A = 80;
-            var Circle = new MapPolygon
+            Color fillColor = Colors.Purple;
+            Color strokeColor = Colors.Red;
+            fillColor.A = 80;
+            strokeColor.A = 80;
+            var circle = new MapPolygon
             {
                 StrokeThickness = 2,
-                FillColor = FillColor,
-                StrokeColor = StrokeColor,
+                FillColor = fillColor,
+                StrokeColor = strokeColor,
                 Path = new Geopath(CalculateCircle(CenterPosition, Radius))
             };
-            MyMap.MapElements.Add(Circle);
+            _myMap.MapElements.Add(circle);
         }
 
         public void DrawCircle(Geoposition newPos, int Radius)
         {
-            BasicGeoposition CenterPosition = newPos.Coordinate.Point.Position;
-            DrawCircle(CenterPosition, Radius);
+            BasicGeoposition centerPosition = newPos.Coordinate.Point.Position;
+            DrawCircle(centerPosition, Radius);
         }
 
-        const double earthRadius = 6371000D;
-        const double Circumference = 2D * Math.PI * earthRadius;
+        const double EarthRadius = 6371000D;
+        const double Circumference = 2D * Math.PI * EarthRadius;
 
         private static List<BasicGeoposition> CalculateCircle(BasicGeoposition Position, double Radius)
         {
-            List<BasicGeoposition> GeoPositions = new List<BasicGeoposition>();
+            List<BasicGeoposition> geoPositions = new List<BasicGeoposition>();
             for (int i = 0; i <= 360; i++)
             {
                 double Bearing = ToRad(i);
-                double CircumferenceLatitudeCorrected = 2D * Math.PI * Math.Cos(ToRad(Position.Latitude)) * earthRadius;
+                double CircumferenceLatitudeCorrected = 2D * Math.PI * Math.Cos(ToRad(Position.Latitude)) * EarthRadius;
                 double lat1 = Circumference / 360D * Position.Latitude;
                 double lon1 = CircumferenceLatitudeCorrected / 360D * Position.Longitude;
                 double lat2 = lat1 + Math.Sin(Bearing) * Radius;
@@ -186,9 +186,9 @@ namespace CashFlow.Controler
                 BasicGeoposition NewBasicPosition = new BasicGeoposition();
                 NewBasicPosition.Latitude = lat2 / (Circumference / 360D);
                 NewBasicPosition.Longitude = lon2 / (CircumferenceLatitudeCorrected / 360D);
-                GeoPositions.Add(NewBasicPosition);
+                geoPositions.Add(NewBasicPosition);
             }
-            return GeoPositions;
+            return geoPositions;
         }
 
         private static double ToRad(double degrees)
@@ -205,7 +205,7 @@ namespace CashFlow.Controler
                 MapRouteView viewOfRoute = new MapRouteView(routeFinderResult.Route);
                 viewOfRoute.RouteColor = Colors.DodgerBlue;
                 viewOfRoute.OutlineColor = Colors.LightBlue;
-                MyMap.Routes.Add(viewOfRoute);
+                _myMap.Routes.Add(viewOfRoute);
             }
             else
             {
@@ -214,29 +214,29 @@ namespace CashFlow.Controler
         }
 
 
-        public async void onMapElementCLick(MapControl sender, MapElementClickEventArgs args)
+        public async void OnMapElementCLick(MapControl sender, MapElementClickEventArgs args)
         {
             MapIcon myClickedIcon = args.MapElements.FirstOrDefault(x => x is MapIcon) as MapIcon;
 
-            Building ClickedBuilding = myClickedIcon.ReadData();
+            Building clickedBuilding = myClickedIcon.ReadData();
 
             var dialog = new MessageDialog(
-                ClickedBuilding.type + "\r" + ClickedBuilding.price + "\r" + ClickedBuilding.EarningsP_S + "\r" + "gekocht: " + ClickedBuilding.Bought, ClickedBuilding.Name );
+                clickedBuilding.type + "\r" + clickedBuilding.price + "\r" + clickedBuilding.EarningsP_S + "\r" + "gekocht: " + clickedBuilding.Bought, clickedBuilding.Name);
             await dialog.ShowAsync();
         }
 
-        public async void test()
+        public async void Test()
         {
-            List<Building> list = fillTest();
+            List<Building> list = FillTest();
             JsonSave.saveBuildingdata(list);
 
             list = await JsonSave.getBuildingList();
 
-            drawBuildingList(list);
+            DrawBuildingList(list);
 
         }
 
-        public List<Building> fillTest()
+        public List<Building> FillTest()
         {
             List<Building> list = new List<Building>();
 
