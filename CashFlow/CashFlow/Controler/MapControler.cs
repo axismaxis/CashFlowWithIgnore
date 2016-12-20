@@ -15,6 +15,9 @@ namespace CashFlow.Controler
     {
         private MapControl MyMap;
 
+        //Keeps track of element that represents the player
+        private MapPolygon playerCircle;
+
         public MapControler(MapControl myMap)
         {
             this.MyMap = myMap;
@@ -49,6 +52,11 @@ namespace CashFlow.Controler
             MyMap.MapElements.Add(Shape);
         }
 
+        public void clearMapMarkers()
+        {
+            MyMap.MapElements.Clear();
+        }
+
         public void drawBuildingList(List<Building> list)
         {
             foreach (Building building in list)
@@ -56,6 +64,7 @@ namespace CashFlow.Controler
                 addBuilding(building);
             }
         }
+
         private void addBuilding(Building building)
         {
             var ancherPoint = new Point(0.5, 1);
@@ -85,6 +94,29 @@ namespace CashFlow.Controler
             MyMap.ZoomLevel = 25;
         }
 
+        public void DrawPlayer(Geoposition newPos, int Radius)
+        {
+            if(MyMap.MapElements.Contains(playerCircle))
+            {
+                MyMap.MapElements.Remove(playerCircle);
+            }
+
+            
+            BasicGeoposition CenterPosition = newPos.Coordinate.Point.Position;
+            Color FillColor = Colors.Purple;
+            Color StrokeColor = Colors.Red;
+            FillColor.A = 80;
+            StrokeColor.A = 80;
+            playerCircle = new MapPolygon
+            {
+                StrokeThickness = 2,
+                FillColor = FillColor,
+                StrokeColor = StrokeColor,
+                Path = new Geopath(CalculateCircle(CenterPosition, Radius))
+            };
+            MyMap.MapElements.Add(playerCircle);
+        }
+
         public void DrawCircle(BasicGeoposition CenterPosition, int Radius)
         {
             Color FillColor = Colors.Purple;
@@ -104,18 +136,7 @@ namespace CashFlow.Controler
         public void DrawCircle(Geoposition newPos, int Radius)
         {
             BasicGeoposition CenterPosition = newPos.Coordinate.Point.Position;
-            Color FillColor = Colors.Purple;
-            Color StrokeColor = Colors.Red;
-            FillColor.A = 80;
-            StrokeColor.A = 80;
-            var Circle = new MapPolygon
-            {
-                StrokeThickness = 2,
-                FillColor = FillColor,
-                StrokeColor = StrokeColor,
-                Path = new Geopath(CalculateCircle(CenterPosition, Radius))
-            };
-            MyMap.MapElements.Add(Circle);
+            DrawCircle(CenterPosition, Radius);
         }
 
         const double earthRadius = 6371000D;
