@@ -92,7 +92,8 @@ namespace CashFlow.Controler
                 Title = building.Name,
                 Location = new Geopoint(building.getPosistion()),
                 NormalizedAnchorPoint = ancherPoint,
-                Image = image
+                Image = image,
+                ZIndex = 20
             };
             BuildingElement.AddData(building);
             MyMap.MapElements.Add(BuildingElement);
@@ -131,7 +132,7 @@ namespace CashFlow.Controler
                 FillColor = FillColor,
                 StrokeColor = StrokeColor,
                 Path = new Geopath(CalculateCircle(drawLocation.Coordinate.Point.Position, 10)),
-                ZIndex = 100
+                ZIndex = 5
             };
             MyMap.MapElements.Add(playerCircle);
             centerMap(drawLocation);
