@@ -11,24 +11,58 @@ using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls.Maps;
+using CashFlow.Storage;
+using Windows.Devices.Geolocation.Geofencing;
 
 namespace CashFlow.Controler
 {
     public class MapController
     {
         private MapControl MyMap;
+        private List<Building> buildingList = new List<Building>();
 
         //Keeps track of element that represents the player
         private MapPolygon playerCircle;
+
+        private IList<Geofence> geofences = GeofenceMonitor.Current.Geofences;
+        public delegate void OnGeofenceTriggered();
+        public event OnGeofenceTriggered GeofenceEnteredEventTriggered;
+        public event OnGeofenceTriggered GeofenceExitedEventTriggered;
 
         public MapController(MapControl myMap)
         {
             this.MyMap = myMap;
             
             addMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomeTypetrue.png");
-            getJSONBuildings();
+            //getJSONBuildings();
+            test();
             drawBuildingList(buildingList);
             //drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
+            GeofenceMonitor.Current.GeofenceStateChanged += OnGeofenceStateChanged;
+        }
+
+        private async void OnGeofenceStateChanged(GeofenceMonitor sender, object args)
+        {
+            var reports = sender.ReadReports();
+
+            await CoreApplication.MainView.Dispatcher.RunAsync
+            (CoreDispatcherPriority.Normal, () =>
+            {
+                foreach (GeofenceStateChangeReport report in reports)
+                {
+                    GeofenceState state = report.NewState;
+                    Geofence geofence = report.Geofence;
+
+                    if (state == GeofenceState.Entered)
+                    {
+                        GeofenceEnteredEventTriggered?.Invoke();
+                    }
+                    else if(state == GeofenceState.Exited)
+                    {
+                        GeofenceExitedEventTriggered?.Invoke();
+                    }
+                }
+            });
 
         }
 
@@ -38,6 +72,38 @@ namespace CashFlow.Controler
             MyMap.LandmarksVisible = true;
             MyMap.DesiredPitch = 65;
             MyMap.ZoomLevel = 17;
+        }
+
+        public void addGeofence(BasicGeoposition position, double radius, string geofenceName)
+        {
+            Geofence newGeofence = GenerateGeofence(position, radius, geofenceName);
+            bool existingGeofence = false;
+            foreach(Geofence g in geofences)
+            {
+                if (g.Id.Equals(newGeofence.Id))
+                {
+                    existingGeofence = true;
+                }
+            }
+            if(!existingGeofence)
+            {
+                geofences.Add(newGeofence);
+            }
+        }
+
+        private Geofence GenerateGeofence(BasicGeoposition position, double radius, string geofenceName)
+        {
+            string geofenceId = geofenceName;
+            // the geofence is a circular region:
+            Geocircle geocircle = new Geocircle(position, radius);
+
+            bool singleUse = false;
+
+            MonitoredGeofenceStates mask = MonitoredGeofenceStates.Entered | MonitoredGeofenceStates.Exited;
+
+            TimeSpan dwellTime = new TimeSpan(0,0,2);
+
+            return new Geofence(geofenceId, geocircle, mask, singleUse, dwellTime);
         }
 
 

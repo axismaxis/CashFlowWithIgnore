@@ -55,7 +55,11 @@ namespace CashFlow.GUI
 
                 //Subscribe method for continuous location changes
                 gpsHandler.SubscribeToLocation(GpsHandler_positionChangedEvent);
-            }    
+            }
+
+            //Add geofences and circles to indicate where the geofences are
+            mapController.addGeofence(new BasicGeoposition { Latitude = 51.5856250, Longitude = 4.7938130}, 100, "Gekke man");
+            mapController.DrawCircle(new BasicGeoposition { Latitude = 51.5856250, Longitude = 4.7938130 }, 50);  
         }
 
         private async void GpsHandler_positionChangedEvent(Geoposition newPosition)
