@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using CashFlow.Controler;
 using Windows.Devices.Geolocation;
+using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.GPS;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -68,13 +69,18 @@ namespace CashFlow.GUI
             {
                 mapController.centerMap(newPosition);
                 mapController.ZoomMap(17);
-                mapController.drawPlayer(newPosition);
+                mapController.DrawPlayer(newPosition);
             });
         }
 
         private void HamburgerButton_OnClick(object sender, RoutedEventArgs e)
         {
             SplitView.IsPaneOpen = !SplitView.IsPaneOpen;
+        }
+
+        private void MyMap_OnMapElementClick(MapControl sender, MapElementClickEventArgs args)
+        {
+            mapController.OnMapElementCLick(sender, args);
         }
     }
 }
