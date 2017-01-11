@@ -3,16 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Windows.ApplicationModel.Core;
-using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Services.Maps;
 using Windows.Storage.Streams;
 using Windows.UI;
-using Windows.UI.Core;
 using Windows.UI.Popups;
-using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.Storage;
 
@@ -25,18 +22,24 @@ namespace CashFlow.Controler
         //Keeps track of element that represents the player
         private MapPolygon _playerCircle;
         List<Building> _buildingList = new List<Building>();
+        ContentDialog dialog = new ContentDialog();
 
         public MapController(MapControl myMap)
         {
             this._myMap = myMap;
 
-            AddMapElement("home", new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 }, "HomeTypetrue.png");
-            //getJSONBuildings();
-            Test();
+            AddMapElement("home", new BasicGeoposition {Longitude = 4.780172, Latitude = 51.586266}, "HomeTypetrue.png");
+            GetJsonBuildings();
+            // Test();
             DrawBuildingList(_buildingList);
+            dialog.Hide();
+            dialog.FullSizeDesired = true;
+            dialog.PrimaryButtonClick += Dialog_CloseButton;
             //drawRoute(new Geopoint(new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586267 }), new Geopoint(new BasicGeoposition { Longitude = 4.0, Latitude = 51.0 }));
 
         }
+
+        
 
         public void InitMap()
         {
@@ -65,7 +68,16 @@ namespace CashFlow.Controler
 
         public async void GetJsonBuildings()
         {
-            _buildingList = await JsonSave.getBuildingList();
+            try
+            {
+                _buildingList = await JsonSave.getBuildingList();
+
+            }
+            catch (Exception)
+            {
+                
+               Test();
+            }
         }
 
         public void ClearMapMarkers()
@@ -217,12 +229,42 @@ namespace CashFlow.Controler
         public async void OnMapElementCLick(MapControl sender, MapElementClickEventArgs args)
         {
             MapIcon myClickedIcon = args.MapElements.FirstOrDefault(x => x is MapIcon) as MapIcon;
-
             Building clickedBuilding = myClickedIcon.ReadData();
+            Grid myGrid = new Grid();
+            ListView LV = new ListView();
+            Button CollectButton = new Button()
+            {
+                Content = "Collect",
+            };
+            CollectButton.Click += CollectButton_Click;
 
-            var dialog = new MessageDialog(
-                clickedBuilding.type + "\r" + clickedBuilding.price + "\r" + clickedBuilding.EarningsP_S + "\r" + "gekocht: " + clickedBuilding.Bought, clickedBuilding.Name);
+            LV.DataContext = clickedBuilding.type + "\r" + clickedBuilding.price + "\r" + clickedBuilding.EarningsP_S +
+                             "\r" + "gekocht: " + clickedBuilding.Bought;
+            LV.DataContext = CollectButton;
+           
+            myGrid.Children.Add(LV);
+            dialog.Title = clickedBuilding.Name;
+
+            dialog.Content = myGrid;
+            dialog.PrimaryButtonText = "Close";
+            dialog.SecondaryButtonText = "Collect";
+            dialog.SecondaryButtonClick += collectButton_Click;
             await dialog.ShowAsync();
+        }
+
+        private void collectButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void CollectButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+           // throw new NotImplementedException();
+        }
+
+        private void Dialog_CloseButton(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            dialog.Hide();
         }
 
         public async void Test()

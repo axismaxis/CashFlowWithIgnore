@@ -72,6 +72,7 @@ namespace CashFlow.GUI
         private void HamburgerButton_OnClick(object sender, RoutedEventArgs e)
         {
             SplitView.IsPaneOpen = !SplitView.IsPaneOpen;
+           // SplitView.IsEnabled = !SplitView.IsEnabled;
         }
 
         private void MyMap_OnMapElementClick(MapControl sender, MapElementClickEventArgs args)
