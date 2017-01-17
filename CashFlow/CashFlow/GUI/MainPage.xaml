@@ -10,6 +10,6 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Button x:Name="button" Content="Set&#xD;&#xA;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="95,220,0,0" Height="129" Width="197" Click="button_Click"/>
         <Button x:Name="button1" Content="Get&#xD;&#xA;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="66,393,0,0" Height="135" Width="226" Click="button1_Click"/>
-        <TextBox x:Name="outputBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Height="147" Width="350" Margin="0,35,0,0"/>
+        <TextBox x:Name="outputBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Height="35" Width="278" Margin="88,107,-6,0"/>
     </Grid>
 </Page>

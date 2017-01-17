@@ -90,6 +90,9 @@
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
+    <None Include="Storage\JSON\buildingData.json" />
+    <None Include="Storage\JSON\overrides.json" />
+    <None Include="Storage\JSON\saveData.json" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controler\MapController.cs" />
@@ -103,6 +106,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="GPS\GPSHandler.cs" />
+    <Compile Include="GUI\LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GUI\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -138,6 +144,7 @@
     <Content Include="Res\MonumentTypetrue.png" />
     <Content Include="Res\MonumentTypefalse.png" />
     <Content Include="Res\MonumentSymbol.png" />
+    <Content Include="Res\phoneBackground.png" />
     <Content Include="Res\WonderTypetrue.png" />
     <Content Include="Res\WonderTypefalse.png" />
     <Content Include="Res\WonderSymbol.png" />
@@ -147,6 +154,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="GUI\LoginPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="GUI\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
