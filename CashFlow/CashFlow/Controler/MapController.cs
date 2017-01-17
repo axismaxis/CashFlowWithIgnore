@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Windows.ApplicationModel.Core;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Services.Maps;
@@ -13,6 +14,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.Storage;
 using Windows.Devices.Geolocation.Geofencing;
+using Windows.UI.Core;
 
 namespace CashFlow.Controler
 {
@@ -35,10 +37,7 @@ namespace CashFlow.Controler
         {
             this._myMap = myMap;
 
-            AddMapElement("home", new BasicGeoposition {Longitude = 4.780172, Latitude = 51.586266}, "HomeTypetrue.png");
-            GetJsonBuildings();
-            // Test();
-            DrawBuildingList(_buildingList);
+           
             dialog.Hide();
             dialog.FullSizeDesired = true;
             dialog.PrimaryButtonClick += Dialog_CloseButton;
@@ -68,7 +67,6 @@ namespace CashFlow.Controler
                     }
                 }
             });
-
         }
 
         
@@ -77,8 +75,10 @@ namespace CashFlow.Controler
         {
             _myMap.ColorScheme = MapColorScheme.Dark;
             _myMap.LandmarksVisible = true;
-            _myMap.DesiredPitch = 65;
+            _myMap.DesiredPitch = 55;
             _myMap.ZoomLevel = 17;
+            GetJsonBuildings();
+            // Test();
         }
 
         public void addGeofence(BasicGeoposition position, double radius, string geofenceName)
@@ -142,6 +142,8 @@ namespace CashFlow.Controler
                 
                Test();
             }
+            DrawBuildingList(_buildingList);
+
         }
 
         public void ClearMapMarkers()
@@ -369,10 +371,15 @@ namespace CashFlow.Controler
                 123,
                 new BasicGeoposition { Latitude = 51.5849670, Longitude = 4.7788590 },
                 true
-
-
-
                 ));
+            list.Add(new Home(
+                "Home",
+                0, 
+                123,
+                new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 },
+                true
+                ));
+
             return list;
         }
     }

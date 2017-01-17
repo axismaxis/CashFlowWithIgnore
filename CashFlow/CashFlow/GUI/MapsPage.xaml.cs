@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using CashFlow.Controler;
 using Windows.Devices.Geolocation;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.GPS;
 
@@ -31,15 +32,16 @@ namespace CashFlow.GUI
 
         //Used for position tracking
         GPSHandler gpsHandler;
+        
+
 
         public MapsPage()
         {
             this.InitializeComponent();
-
             mapController = new MapController(MyMap);
             gpsHandler = new GPSHandler();
-
             this.Loaded += page_Loaded;
+
         }
 
         private async void page_Loaded(object sender, RoutedEventArgs args)
@@ -63,6 +65,7 @@ namespace CashFlow.GUI
             mapController.DrawCircle(new BasicGeoposition { Latitude = 51.5856250, Longitude = 4.7938130 }, 50);  
         }
 
+
         private async void GpsHandler_positionChangedEvent(Geoposition newPosition)
         {
             await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
@@ -83,5 +86,22 @@ namespace CashFlow.GUI
         {
             mapController.OnMapElementCLick(sender, args);
         }
+
+        private void Houses_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AcountListBox.IsSelected)
+            {
+                Frame.Navigate(typeof(AcountPage));
+            }
+
+
+
+
+            SplitView.IsPaneOpen = !SplitView.IsPaneOpen;
+        }
+
+       
     }
+
+
 }
