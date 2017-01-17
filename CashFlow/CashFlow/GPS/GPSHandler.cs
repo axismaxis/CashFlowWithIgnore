@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
+using Windows.Devices.Geolocation.Geofencing;
 
 namespace CashFlow.GPS
 {
@@ -27,6 +28,11 @@ namespace CashFlow.GPS
         /// </summary>
         private event positionChangedDelegate positionChangedEvent;
         private int listenersSubscribed = 0;
+
+        //geofence setup variables
+        public delegate void OnGeofenceTriggered();
+        public event OnGeofenceTriggered GeofenceEnteredEventTriggered;
+        public event OnGeofenceTriggered GeofenceExitedEventTriggered;
 
         /// <summary>
         /// Buffer with latest received location update
@@ -93,10 +99,7 @@ namespace CashFlow.GPS
         private void GpsPositionChanged(Geolocator sender, PositionChangedEventArgs args)
         {
             lastPositionReceived = args.Position;
-            if (listenersSubscribed > 0)
-            { 
-                positionChangedEvent(args.Position);
-            }
+            positionChangedEvent?.Invoke(args.Position);
         }
     }
 }
