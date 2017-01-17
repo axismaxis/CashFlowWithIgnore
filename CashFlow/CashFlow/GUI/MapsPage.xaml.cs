@@ -17,6 +17,8 @@ using Windows.Devices.Geolocation;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.GPS;
+using CashFlow.GameLogic;
+using Windows.Devices.Geolocation.Geofencing;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -34,6 +36,9 @@ namespace CashFlow.GUI
         GPSHandler gpsHandler;
         
 
+
+        //List that keeps track of the building that the player can visit
+        public List<Building> buildingsVistiting = new List<Building>();
 
         public MapsPage()
         {
@@ -58,11 +63,40 @@ namespace CashFlow.GUI
 
                 //Subscribe method for continuous location changes
                 gpsHandler.SubscribeToLocation(GpsHandler_positionChangedEvent);
-            }
 
-            //Add geofences and circles to indicate where the geofences are
-            mapController.addGeofence(new BasicGeoposition { Latitude = 51.5856250, Longitude = 4.7938130}, 100, "Gekke man");
-            mapController.DrawCircle(new BasicGeoposition { Latitude = 51.5856250, Longitude = 4.7938130 }, 50);  
+                foreach(Building b in mapController.buildingList)
+                {
+                    mapController.addGeofence(b.Posistion, 100, b.Name);
+                    mapController.DrawCircle(b.Posistion, 100);
+                }
+                mapController.GeofenceEnteredEventTriggered += MapController_GeofenceEnteredEventTriggered;
+                mapController.GeofenceExitedEventTriggered += MapController_GeofenceExitedEventTriggered;
+            }
+        }
+
+        private void MapController_GeofenceEnteredEventTriggered(Geofence geofence)
+        {
+            //Do shit when geofence leaves
+            foreach (Building b in mapController.buildingList)
+            {
+                if (geofence.Id.Equals(b.Name))
+                {
+                    mapController.centerMap(b.Posistion);
+                    buildingsVistiting.Add(b);
+                }
+            }
+        }
+
+        private void MapController_GeofenceExitedEventTriggered(Geofence geofence)
+        {
+            foreach (Building b in mapController.buildingList)
+            {
+                if (geofence.Id.Equals(b.Name))
+                {
+                    mapController.centerMap(b.Posistion);
+                    buildingsVistiting.Remove(b);
+                }
+            }
         }
 
 
@@ -84,7 +118,7 @@ namespace CashFlow.GUI
 
         private void MyMap_OnMapElementClick(MapControl sender, MapElementClickEventArgs args)
         {
-            mapController.OnMapElementCLick(sender, args);
+            mapController.OnMapElementCLick(sender, args, buildingsVistiting);
         }
 
         private void Houses_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

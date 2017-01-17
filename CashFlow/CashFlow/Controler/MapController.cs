@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.Storage;
 using Windows.Devices.Geolocation.Geofencing;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 
 namespace CashFlow.Controler
@@ -21,15 +22,14 @@ namespace CashFlow.Controler
     public class MapController
     {
         private readonly MapControl _myMap;
-        private List<Building> buildingList = new List<Building>();
 
         //Keeps track of element that represents the player
         private MapPolygon _playerCircle;
-        List<Building> _buildingList = new List<Building>();
+        public List<Building> buildingList = new List<Building>();
         ContentDialog dialog = new ContentDialog();
 
         private IList<Geofence> geofences = GeofenceMonitor.Current.Geofences;
-        public delegate void OnGeofenceTriggered();
+        public delegate void OnGeofenceTriggered(Geofence geofence);
         public event OnGeofenceTriggered GeofenceEnteredEventTriggered;
         public event OnGeofenceTriggered GeofenceExitedEventTriggered;
 
@@ -59,17 +59,15 @@ namespace CashFlow.Controler
 
                     if (state == GeofenceState.Entered)
                     {
-                        GeofenceEnteredEventTriggered?.Invoke();
+                        GeofenceEnteredEventTriggered?.Invoke(geofence);
                     }
                     else if(state == GeofenceState.Exited)
                     {
-                        GeofenceExitedEventTriggered?.Invoke();
+                        GeofenceExitedEventTriggered?.Invoke(geofence);
                     }
                 }
             });
         }
-
-        
 
         public void InitMap()
         {
@@ -134,7 +132,7 @@ namespace CashFlow.Controler
         {
             try
             {
-                _buildingList = await JsonSave.getBuildingList();
+                buildingList = await JsonSave.getBuildingList();
 
             }
             catch (Exception)
@@ -292,28 +290,32 @@ namespace CashFlow.Controler
         }
 
 
-        public async void OnMapElementCLick(MapControl sender, MapElementClickEventArgs args)
+        public async void OnMapElementCLick(MapControl sender, MapElementClickEventArgs args, List<Building> buildingsVisited)
         {
             MapIcon myClickedIcon = args.MapElements.FirstOrDefault(x => x is MapIcon) as MapIcon;
             Building clickedBuilding = myClickedIcon.ReadData();
             Grid myGrid = new Grid();
             ListView LV = new ListView();
-            Button CollectButton = new Button()
-            {
-                Content = "Collect",
-            };
-            CollectButton.Click += CollectButton_Click;
 
             LV.DataContext = clickedBuilding.type + "\r" + clickedBuilding.price + "\r" + clickedBuilding.EarningsP_S +
                              "\r" + "gekocht: " + clickedBuilding.Bought;
-            LV.DataContext = CollectButton;
            
             myGrid.Children.Add(LV);
             dialog.Title = clickedBuilding.Name;
 
             dialog.Content = myGrid;
             dialog.PrimaryButtonText = "Close";
-            dialog.SecondaryButtonText = "Collect";
+            dialog.SecondaryButtonText = "Not in range";
+            dialog.IsSecondaryButtonEnabled = false;
+            foreach (Building b in buildingsVisited)
+            {
+                if (b.Name.Equals(clickedBuilding.Name)) 
+                {
+                    dialog.IsSecondaryButtonEnabled = true;
+                    dialog.SecondaryButtonText = "Collect";
+                }
+            }
+                        
             dialog.SecondaryButtonClick += collectButton_Click;
             await dialog.ShowAsync();
         }
@@ -321,11 +323,6 @@ namespace CashFlow.Controler
         private void collectButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             //throw new NotImplementedException();
-        }
-
-        private void CollectButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-           // throw new NotImplementedException();
         }
 
         private void Dialog_CloseButton(ContentDialog sender, ContentDialogButtonClickEventArgs args)
