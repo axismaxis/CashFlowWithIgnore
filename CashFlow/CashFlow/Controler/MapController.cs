@@ -140,7 +140,7 @@ namespace CashFlow.Controler
                 
                Test();
             }
-            DrawBuildingList(_buildingList);
+            DrawBuildingList(buildingList);
 
         }
 
