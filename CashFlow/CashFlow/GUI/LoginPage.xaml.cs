@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -32,6 +33,7 @@ namespace CashFlow.GUI
         private GPSHandler gpsHandler;
         private Geoposition position;
         private Geoposition calculatedPosition;
+        private List<AccountInfo> accountList = new List<AccountInfo>();
 
 
         public LoginPage()
@@ -66,20 +68,32 @@ namespace CashFlow.GUI
             AccountInfo account = null;
             try
             {
-               // account = JsonSave.LoadPersonalDataFromJson().Result;
+                account = JsonSave.LoadPersonalDataFromJson().Result;
                 //AccountInfo account = new AccountInfo("test",123,23.21,321.1);
             }
             catch
             {
                 Debug.WriteLine("no account found");
             }
-
             if (account != null)
                 {
-                    Frame.Navigate(typeof(MapsPage));
-                    MyMapLoginScreen.IsEnabled = false;
+                    Debug.WriteLine("account found");
+                    if (this._contentLoaded)
+                    {
+                        Debug.WriteLine("loaded");
+                        MyMapLoginScreen.IsEnabled = false;
+                        this.Content = null;
+                   
+                        Frame.Navigate(typeof(MapsPage));
+                    }
+                    else
+                    {
+                        Debug.WriteLine("not fully loaded");
+                        loading();
+                    }
                 }
         }
+
 
         private async void GpsHandler_positionChangedEvent(Geoposition newPosition)
         {
@@ -143,10 +157,7 @@ namespace CashFlow.GUI
                 }
                 else
                 {
-                    AccountInfo account = new AccountInfo(NameField.Text, 0, position.Coordinate.Point.Position.Longitude, position.Coordinate.Point.Position.Latitude);
-                    JsonSave.SavePersonalDataToJson(account);
-                    Frame.Navigate(typeof(MapsPage));
-                    MyMapLoginScreen.IsEnabled = false;
+                    succes();
                 }
             }
             else
@@ -159,6 +170,16 @@ namespace CashFlow.GUI
                 warning.PrimaryButtonText = "Close";
                 warning.ShowAsync();
             }
+        }
+
+        private async void succes()
+        {
+            AccountInfo account = new AccountInfo(NameField.Text, 0, position.Coordinate.Point.Position.Longitude, position.Coordinate.Point.Position.Latitude);
+            //AccountInfo account = new AccountInfo(NameField.Text, 0, 123.0, 123);
+            accountList.Add(account);
+            await JsonSave.SavePersonalDataToJson(accountList);
+            Frame.Navigate(typeof(MapsPage));
+            MyMapLoginScreen.IsEnabled = false;
         }
 
     }

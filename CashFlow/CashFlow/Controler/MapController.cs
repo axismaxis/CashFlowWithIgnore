@@ -33,12 +33,13 @@ namespace CashFlow.Controler
         public delegate void OnGeofenceTriggered(Geofence geofence);
         public event OnGeofenceTriggered GeofenceEnteredEventTriggered;
         public event OnGeofenceTriggered GeofenceExitedEventTriggered;
+        private AccountInfo account;
 
         public MapController(MapControl myMap)
         {
             this._myMap = myMap;
 
-           
+           Debug.WriteLine("now in mappage");
             dialog.Hide();
             dialog.FullSizeDesired = true;
             dialog.PrimaryButtonClick += Dialog_CloseButton;
@@ -77,6 +78,7 @@ namespace CashFlow.Controler
             _myMap.DesiredPitch = 55;
             _myMap.ZoomLevel = 17;
             GetJsonBuildings();
+            getAccount();
             // Test();
         }
 
@@ -95,6 +97,20 @@ namespace CashFlow.Controler
             {
                 geofences.Add(newGeofence);
             }
+        }
+
+        private void getAccount()
+        {
+            account = JsonSave.LoadPersonalDataFromJson().Result;
+            drawHome();
+        }
+
+        private void drawHome()
+        {
+            BasicGeoposition position = new BasicGeoposition();
+            position.Latitude = account.getLatitude();
+            position.Longitude = account.getLongitude();
+            AddBuilding(new Home("Home",0,123,position,true ));
         }
 
         private Geofence GenerateGeofence(BasicGeoposition position, double radius, string geofenceName)
@@ -140,6 +156,7 @@ namespace CashFlow.Controler
             {
                 
                Test();
+              Debug.WriteLine("no buildings found");
             }
             DrawBuildingList(buildingList);
 
@@ -306,21 +323,34 @@ namespace CashFlow.Controler
 
             dialog.Content = myGrid;
             dialog.PrimaryButtonText = "Close";
-            dialog.SecondaryButtonText = "Not in range";
-            dialog.IsSecondaryButtonEnabled = false;
-            foreach (Building b in buildingsVisited)
+            if (clickedBuilding.Bought)
             {
-                if (b.Name.Equals(clickedBuilding.Name)) 
+                dialog.SecondaryButtonText = "Not in range";
+
+                dialog.IsSecondaryButtonEnabled = false;
+                foreach (Building b in buildingsVisited)
                 {
-                    dialog.IsSecondaryButtonEnabled = true;
-                    dialog.SecondaryButtonText = "Collect";
+                    if (b.Name.Equals(clickedBuilding.Name))
+                    {
+                        dialog.IsSecondaryButtonEnabled = true;
+                        dialog.SecondaryButtonText = "Collect";
+                    }
                 }
+
+                dialog.SecondaryButtonClick += collectButton_Click;
             }
-                        
-            dialog.SecondaryButtonClick += collectButton_Click;
+            else
+            {
+                dialog.SecondaryButtonText = "buy for: " + clickedBuilding.price;
+                dialog.SecondaryButtonClick += buyButton_click;
+            }
             await dialog.ShowAsync();
         }
 
+        private void buyButton_click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            // new buy implementation
+        }
         private void collectButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             //throw new NotImplementedException();
@@ -335,8 +365,8 @@ namespace CashFlow.Controler
         {
             if (name.Equals("acount"))
             {
-                AccountInfo acc = new AccountInfo("test", 123, 12.233, 12.34);
-                String content = acc.ToString();
+   
+                String content = account.ToString();
 
                 ContentDialog Dialog = new ContentDialog
                 {
@@ -393,14 +423,6 @@ namespace CashFlow.Controler
                 new BasicGeoposition { Latitude = 51.5849670, Longitude = 4.7788590 },
                 true
                 ));
-            list.Add(new Home(
-                "Home",
-                0, 
-                123,
-                new BasicGeoposition { Longitude = 4.780172, Latitude = 51.586266 },
-                true
-                ));
-
             return list;
         }
     }

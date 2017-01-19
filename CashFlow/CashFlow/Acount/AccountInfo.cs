@@ -40,6 +40,15 @@ namespace CashFlow.Acount
             return _earnings;
         }
 
+        public double getLongitude()
+        {
+            return longitude;
+        }
+
+        public double getLatitude()
+        {
+            return latitude;
+        }
         public override string ToString()
         {
             return "\nPlayer name: " + _Name + "\nMoney: " + _earnings + "\nHome Location: " + longitude + ", Latitude: " + latitude;

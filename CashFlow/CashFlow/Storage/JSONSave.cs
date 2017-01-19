@@ -8,6 +8,7 @@ using Windows.Storage.Streams;
 using CashFlow.Acount;
 using CashFlow.GameLogic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CashFlow.Storage
 {
@@ -36,27 +37,13 @@ namespace CashFlow.Storage
         //    }
         //}
 
-        public static async void SavePersonalDataToJson(AccountInfo accountInfo)
-        {
-            // Serialize our Product class into a string
-            // Changed to serialze the List
+        //public static void SavePersonalDataToJson(AccountInfo accountInfo)
+        //{
+        //    string jsonContents = JsonConvert.SerializeObject(accountInfo);
+        //    JObject o = (JObject)JToken.FromObject(accountInfo);
 
-            // Get the app data folder and create or replace the file we are storing the JSON in.
-            //StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-            // StorageFile textFile = await localFolder.CreateFileAsync(PersonalDataFileName, CreationCollisionOption.ReplaceExisting);
 
-            // Open the file...
-            string jsonContents = JsonConvert.SerializeObject(accountInfo);
-            // using (IRandomAccessStream mystream = await textFile.OpenAsync(FileAccessMode.ReadWrite))
-            //{
-            //    using (DataWriter textWriter = new DataWriter(mystream))
-            //    {
-            //        textWriter.WriteString(jsonContents);
-            //        await textWriter.StoreAsync();
-            //    }
-                
-            //}
-        }
+        //}
         //public static async void SavePersonalDataToJson(AccountInfo account)
         //{
         //    // Serialize our Product class into a string
@@ -80,10 +67,34 @@ namespace CashFlow.Storage
         //    }
         //}
 
+
+        public static async Task<bool> SavePersonalDataToJson(List<AccountInfo> list)
+        {
+            // Serialize our Product class into a string
+            // Changed to serialze the List
+
+            // Get the app data folder and create or replace the file we are storing the JSON in.
+            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+            StorageFile textFile = await localFolder.CreateFileAsync(PersonalDataFileName, CreationCollisionOption.ReplaceExisting);
+
+            // Open the file...
+
+            string jsonContents = JsonConvert.SerializeObject(UserToUserData(list));
+            using (IRandomAccessStream mysteream = await textFile.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                using (DataWriter textWriter = new DataWriter(mysteream))
+                {
+                    textWriter.WriteString(jsonContents);
+                    await textWriter.StoreAsync();
+                }
+            }
+            return true;
+        }
+
         public static async Task<AccountInfo> LoadPersonalDataFromJson()
         {
             StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-            StorageFile textFile = await localFolder.GetFileAsync(BuildingDataFileName);
+            StorageFile textFile = await localFolder.GetFileAsync(PersonalDataFileName);
 
             using (IRandomAccessStream textStream = await textFile.OpenReadAsync())
             {
@@ -96,7 +107,11 @@ namespace CashFlow.Storage
                     // read it                    
                     string jsonContents = textReader.ReadString(textLength);
                     // deserialize back to our product!  
-                    AccountInfo accountInfoFromJsonFile = JsonConvert.DeserializeObject<AccountInfo>(jsonContents);
+                    List<userData> userList = JsonConvert.DeserializeObject<List<userData>>(jsonContents);
+                    List<AccountInfo> convertedUserList = UserdataToUser(userList);
+
+
+                    AccountInfo accountInfoFromJsonFile = convertedUserList[0];
                     // and show it                     
                     return accountInfoFromJsonFile;
                 }
@@ -156,6 +171,28 @@ namespace CashFlow.Storage
             }
         }
 
+        public static List<userData> UserToUserData(List<AccountInfo> list)
+        {
+            List<userData> newuserList = new List<userData>();
+
+            foreach (AccountInfo accountInfo in list)
+            {
+                newuserList.Add(new userData( accountInfo.GetName(), accountInfo.GetEarnings(), accountInfo.getLongitude(), accountInfo.getLatitude()));
+            }
+            return newuserList;
+        }
+        public static List<AccountInfo> UserdataToUser(List<userData> list)
+        {
+            List<AccountInfo> account = new List<AccountInfo>();
+
+            foreach (userData userData in list)
+            {
+                account.Add(new AccountInfo(userData.userName, userData.earnings, userData.longitude, userData.latitude));
+            }
+            return account;
+        }
+
+
         public static List<BuildingData> BuildingToBuildingData(List<Building> list)
         {
             List<BuildingData> newList = new List<BuildingData>();
@@ -174,9 +211,6 @@ namespace CashFlow.Storage
             }
             return newList;
         }
-
-
-
         public static List<Building> BuildingDataToBuilding(List<BuildingData> list)
         {
             List<Building> buildingList = new List<Building>();
@@ -250,6 +284,22 @@ namespace CashFlow.Storage
             this.Position = Position;
             this.Bought = Bought;
             this.Type = Type;
+        }
+
+    }
+    public class userData
+    {
+        public string userName {get; set;}
+        public double earnings { get; set; }
+        public double longitude { get; set; }
+        public double latitude { get; set; }
+
+        public userData(String userName, double earnings, double longitude, double latitude)
+        {
+            this.userName = userName;
+            this.earnings = earnings;
+            this.longitude = longitude;
+            this.latitude = latitude;
         }
 
     }

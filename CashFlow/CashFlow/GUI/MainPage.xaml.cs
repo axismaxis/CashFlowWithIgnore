@@ -42,7 +42,7 @@ namespace CashFlow
         private void button_Click(object sender, RoutedEventArgs e)
         {
             AccountInfo info = new AccountInfo("Kerk", 100.0, 4.7812310, 51.5851460);
-            JsonSave.SavePersonalDataToJson(info);
+           // JsonSave.SavePersonalDataToJson(info);
         }
 
         private async void button1_Click(object sender, RoutedEventArgs e)
