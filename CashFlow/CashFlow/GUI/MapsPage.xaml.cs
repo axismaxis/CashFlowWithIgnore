@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using CashFlow.Controler;
 using Windows.Devices.Geolocation;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.GPS;
 using CashFlow.GameLogic;
@@ -33,6 +34,8 @@ namespace CashFlow.GUI
 
         //Used for position tracking
         GPSHandler gpsHandler;
+        
+
 
         //List that keeps track of the building that the player can visit
         public List<Building> buildingsVistiting = new List<Building>();
@@ -40,10 +43,8 @@ namespace CashFlow.GUI
         public MapsPage()
         {
             this.InitializeComponent();
-
             mapController = new MapController(MyMap);
             gpsHandler = new GPSHandler();
-
             this.Loaded += page_Loaded;
             this.Unloaded += MapsPage_Unloaded;
         }
@@ -105,6 +106,7 @@ namespace CashFlow.GUI
             }
         }
 
+
         private async void GpsHandler_positionChangedEvent(Geoposition newPosition)
         {
             await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
@@ -125,5 +127,22 @@ namespace CashFlow.GUI
         {
             mapController.OnMapElementCLick(sender, args, buildingsVistiting);
         }
+
+        private void Houses_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AcountListBox.IsSelected)
+            {
+                Frame.Navigate(typeof(AcountPage));
+            }
+
+
+
+
+            SplitView.IsPaneOpen = !SplitView.IsPaneOpen;
+        }
+
+       
     }
+
+
 }

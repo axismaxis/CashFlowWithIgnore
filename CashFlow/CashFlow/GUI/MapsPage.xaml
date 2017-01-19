@@ -1,4 +1,5 @@
 ﻿<Page
+    NavigationCacheMode="Required"
     x:Class="CashFlow.GUI.MapsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -22,11 +23,11 @@
             </Button>
             <SplitView Grid.Row="1" Name="SplitView" DisplayMode="CompactOverlay" OpenPaneLength="285" CompactPaneLength="0" HorizontalAlignment="Left" Width="360">
 
-                <SplitView.Pane>
-                    <ListBox  Name="Houses" SelectionMode="Single"  UseLayoutRounding="True" HorizontalAlignment="Left" >
-                        <ListBoxItem Margin="0,40">
+                <SplitView.Pane >
+                    <ListBox  Name="Houses" SelectionMode="Single"  UseLayoutRounding="True" HorizontalAlignment="Left" SelectionChanged="Houses_OnSelectionChanged" >
+                        <ListBoxItem  Name ="AcountListBox" Margin="0,40,0,0">
                             <StackPanel>
-                            <TextBlock Text="My acount"></TextBlock>
+                                <TextBlock Text="My acount"></TextBlock>
                             </StackPanel>
                         </ListBoxItem>
                         <ListBoxItem Name="listBoxLocalListBox">
@@ -41,15 +42,31 @@
                                 <TextBlock FontSize="24" Text="  Monuments" Margin="0,16,0,0"/>
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem Name="WonderListBox">
+                        <ListBoxItem Name="WonderListBox" Margin="0,0,0,60">
                             <StackPanel Orientation="Horizontal" Height="60">
                                 <Image Source="../WonderSymbol.png"></Image>
                                 <TextBlock FontSize="24" Text="  Wonders" Margin="0,16,0,0"/>
                             </StackPanel>
                         </ListBoxItem>
+                        <ListBoxItem  Name ="SettingsListBox">
+                            <StackPanel>
+                                <TextBlock Text="Settings"></TextBlock>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem  Name ="HelpListBox">
+                            <StackPanel>
+                                <TextBlock Text="Help"></TextBlock>
+                            </StackPanel>
+                        </ListBoxItem>
                     </ListBox>
                 </SplitView.Pane>
-                </SplitView>
+                <SplitView.Content>
+                    <Grid>
+                        <Frame Name="Frame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Frame>
+                   </Grid>
+                </SplitView.Content>
+            </SplitView>
+           
 
 
         </Grid>
