@@ -107,7 +107,7 @@ namespace CashFlow.Controler
 
             MonitoredGeofenceStates mask = MonitoredGeofenceStates.Entered | MonitoredGeofenceStates.Exited;
 
-            TimeSpan dwellTime = new TimeSpan(0,0,2);
+            TimeSpan dwellTime = new TimeSpan(0,0,1);
 
             return new Geofence(geofenceId, geocircle, mask, singleUse, dwellTime);
         }

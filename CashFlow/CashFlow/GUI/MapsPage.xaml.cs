@@ -45,6 +45,12 @@ namespace CashFlow.GUI
             gpsHandler = new GPSHandler();
 
             this.Loaded += page_Loaded;
+            this.Unloaded += MapsPage_Unloaded;
+        }
+
+        private void MapsPage_Unloaded(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private async void page_Loaded(object sender, RoutedEventArgs args)
@@ -71,6 +77,8 @@ namespace CashFlow.GUI
                 mapController.GeofenceExitedEventTriggered += MapController_GeofenceExitedEventTriggered;
             }
         }
+
+        
 
         private void MapController_GeofenceEnteredEventTriggered(Geofence geofence)
         {

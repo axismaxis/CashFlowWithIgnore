@@ -29,11 +29,6 @@ namespace CashFlow.GPS
         private event positionChangedDelegate positionChangedEvent;
         private int listenersSubscribed = 0;
 
-        //geofence setup variables
-        public delegate void OnGeofenceTriggered();
-        public event OnGeofenceTriggered GeofenceEnteredEventTriggered;
-        public event OnGeofenceTriggered GeofenceExitedEventTriggered;
-
         /// <summary>
         /// Buffer with latest received location update
         /// </summary>
