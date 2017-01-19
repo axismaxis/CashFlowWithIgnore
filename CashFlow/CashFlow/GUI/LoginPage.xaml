@@ -13,7 +13,7 @@
 
         <StackPanel>
          <TextBlock Margin="0,50,0,0" Text="Name:" FontSize="24"></TextBlock>
-        <TextBox Margin="10,0" FontSize="24" ></TextBox>
+        <TextBox Margin="10,0" FontSize="24" Name="NameField" ></TextBox>
         <TextBlock Text="Home Location:" Margin="0,25,0,0" FontSize="24"></TextBlock>
             <maps:MapControl x:Name="MyMapLoginScreen" Margin="10"
                          MapServiceToken="hXfoPb3UobMURPpymfd8~0KFlzLHFoGrO6NViSu2ltQ~AhzGBC78z3Ww6lQE6Df1AETSVLvCRCt7Q_WXIMPTYgiPpkVf6kNv0RYgId0cy5a0" 

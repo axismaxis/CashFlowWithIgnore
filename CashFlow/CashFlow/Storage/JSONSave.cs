@@ -18,23 +18,23 @@ namespace CashFlow.Storage
         private const string PersonalDataFileName = "saveData.json";
         private const string BuildingDataFileName = "buildingData.json";
 
-        public static async Task<bool> FileExist()
-        {
-            try
-            {
-                var folders = ApplicationData.Current.LocalFolder;
-                var file = await folders.GetFileAsync(PersonalDataFileName);
-                var buildingFile = await folders.GetFileAsync(BuildingDataFileName);
-                if (file.Path != null)
-                    return false;
-                else
-                    return true;
-            }
-            catch
-            {
-                return true;
-            }
-        }
+        //public static async Task<bool> FileExist()
+        //{
+        //    try
+        //    {
+        //        var folders = ApplicationData.Current.LocalFolder;
+        //        var file = await folders.GetFileAsync(PersonalDataFileName);
+        //        var buildingFile = await folders.GetFileAsync(BuildingDataFileName);
+        //        if (file.Path != null)
+        //            return false;
+        //        else
+        //            return true;
+        //    }
+        //    catch
+        //    {
+        //        return true;
+        //    }
+        //}
 
         public static async void SavePersonalDataToJson(AccountInfo accountInfo)
         {
@@ -42,21 +42,43 @@ namespace CashFlow.Storage
             // Changed to serialze the List
 
             // Get the app data folder and create or replace the file we are storing the JSON in.
-            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-            StorageFile textFile = await localFolder.CreateFileAsync(PersonalDataFileName, CreationCollisionOption.ReplaceExisting);
+            //StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+            // StorageFile textFile = await localFolder.CreateFileAsync(PersonalDataFileName, CreationCollisionOption.ReplaceExisting);
 
             // Open the file...
             string jsonContents = JsonConvert.SerializeObject(accountInfo);
-            using (IRandomAccessStream mysteream = await textFile.OpenAsync(FileAccessMode.ReadWrite))
-            {
-                using (DataWriter textWriter = new DataWriter(mysteream))
-                {
-                    textWriter.WriteString(jsonContents);
-                    await textWriter.StoreAsync();
-                }
-
-            }
+            // using (IRandomAccessStream mystream = await textFile.OpenAsync(FileAccessMode.ReadWrite))
+            //{
+            //    using (DataWriter textWriter = new DataWriter(mystream))
+            //    {
+            //        textWriter.WriteString(jsonContents);
+            //        await textWriter.StoreAsync();
+            //    }
+                
+            //}
         }
+        //public static async void SavePersonalDataToJson(AccountInfo account)
+        //{
+        //    // Serialize our Product class into a string
+        //    // Changed to serialze the List
+
+        //    // Get the app data folder and create or replace the file we are storing the JSON in.
+        //    StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+        //    StorageFile textFile = await localFolder.CreateFileAsync(PersonalDataFileName, CreationCollisionOption.ReplaceExisting);
+
+        //    // Open the file...
+
+        //    string jsonContents = JsonConvert.SerializeObject(account);
+        //    using (IRandomAccessStream mysteream = await textFile.OpenAsync(FileAccessMode.ReadWrite))
+        //    {
+        //        using (DataWriter textWriter = new DataWriter(mysteream))
+        //        {
+        //            textWriter.WriteString(jsonContents);
+        //            await textWriter.StoreAsync();
+        //        }
+
+        //    }
+        //}
 
         public static async Task<AccountInfo> LoadPersonalDataFromJson()
         {
@@ -100,7 +122,6 @@ namespace CashFlow.Storage
                     textWriter.WriteString(jsonContents);
                     await textWriter.StoreAsync();
                 }
-
             }
         }
 

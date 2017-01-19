@@ -17,6 +17,8 @@ namespace CashFlow.Acount
         [DataMember]
         private double latitude;
 
+        public static string content;
+
         public AccountInfo(string name, double earnings, double longa, double lati)
         {
             _Name = name;
@@ -25,6 +27,7 @@ namespace CashFlow.Acount
 
             longitude = longa;
             latitude = lati;
+
         }
 
         public string GetName()

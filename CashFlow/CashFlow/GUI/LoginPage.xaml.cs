@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -15,7 +16,9 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using CashFlow.Acount;
 using CashFlow.GPS;
+using CashFlow.Storage;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -36,8 +39,9 @@ namespace CashFlow.GUI
 
             this.InitializeComponent();
             gpsHandler = new GPSHandler();
-            MyMapLoginScreen.ColorScheme = MapColorScheme.Dark;
+            MyMapLoginScreen.ColorScheme = MapColorScheme.Dark;          
             this.Loaded += page_Loaded;
+            
         }
 
         private async void page_Loaded(object sender, RoutedEventArgs args)
@@ -53,6 +57,28 @@ namespace CashFlow.GUI
                 //Subscribe method for continuous location changes
                 gpsHandler.SubscribeToLocation(GpsHandler_positionChangedEvent);
             }
+            loading();
+        }
+
+
+        private void loading()
+        {
+            AccountInfo account = null;
+            try
+            {
+               // account = JsonSave.LoadPersonalDataFromJson().Result;
+                //AccountInfo account = new AccountInfo("test",123,23.21,321.1);
+            }
+            catch
+            {
+                Debug.WriteLine("no account found");
+            }
+
+            if (account != null)
+                {
+                    Frame.Navigate(typeof(MapsPage));
+                    MyMapLoginScreen.IsEnabled = false;
+                }
         }
 
         private async void GpsHandler_positionChangedEvent(Geoposition newPosition)
@@ -103,8 +129,36 @@ namespace CashFlow.GUI
            
             //saving to json plz yass bosss
             //while saving use calculatedPosition plz
-            Frame.Navigate(typeof(MapsPage));
-            MyMapLoginScreen.IsEnabled = false;
+            if (NameField.Text != "")
+            {
+                if (NameField.Text.Length < 3)
+                {
+                    ContentDialog warning = new ContentDialog
+                    {
+                        Title = "Something went wrong",
+                        Content = "Your name must be at least 3 characters long. \r Please try again."
+                    };
+                    warning.PrimaryButtonText = "Close";
+                    warning.ShowAsync();
+                }
+                else
+                {
+                    AccountInfo account = new AccountInfo(NameField.Text, 0, position.Coordinate.Point.Position.Longitude, position.Coordinate.Point.Position.Latitude);
+                    JsonSave.SavePersonalDataToJson(account);
+                    Frame.Navigate(typeof(MapsPage));
+                    MyMapLoginScreen.IsEnabled = false;
+                }
+            }
+            else
+            {
+                ContentDialog warning = new ContentDialog
+                {
+                    Title = "Something went wrong",
+                    Content = "Please fill in your name."
+                };
+                warning.PrimaryButtonText = "Close";
+                warning.ShowAsync();
+            }
         }
 
     }

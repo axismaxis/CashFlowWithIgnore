@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.GPS;
 using CashFlow.GameLogic;
 using Windows.Devices.Geolocation.Geofencing;
+using Windows.System;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -45,6 +46,7 @@ namespace CashFlow.GUI
             this.InitializeComponent();
             mapController = new MapController(MyMap);
             gpsHandler = new GPSHandler();
+            mapController.InitMap();
             this.Loaded += page_Loaded;
 
         }
@@ -52,7 +54,7 @@ namespace CashFlow.GUI
         private async void page_Loaded(object sender, RoutedEventArgs args)
         {
             //Init map
-            mapController.InitMap();
+           
 
             //Init GPS
             bool succesfullConnect = await gpsHandler.RequestUserAccesAsync();
@@ -66,7 +68,7 @@ namespace CashFlow.GUI
 
                 foreach(Building b in mapController.buildingList)
                 {
-                    mapController.addGeofence(b.Posistion, 100, b.Name);
+                    mapController.addGeofence(b.Posistion, 50, b.Name);
                     mapController.DrawCircle(b.Posistion, 100);
                 }
                 mapController.GeofenceEnteredEventTriggered += MapController_GeofenceEnteredEventTriggered;
@@ -125,13 +127,12 @@ namespace CashFlow.GUI
         {
             if (AcountListBox.IsSelected)
             {
-                Frame.Navigate(typeof(AcountPage));
+                mapController.showContent("acount");
             }
+           
+            Houses.SelectedIndex = -1;
+            SplitView.IsPaneOpen = false;
 
-
-
-
-            SplitView.IsPaneOpen = !SplitView.IsPaneOpen;
         }
 
        

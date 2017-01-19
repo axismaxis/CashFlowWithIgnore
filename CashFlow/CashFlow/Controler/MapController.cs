@@ -16,6 +16,7 @@ using CashFlow.Storage;
 using Windows.Devices.Geolocation.Geofencing;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
+using CashFlow.Acount;
 
 namespace CashFlow.Controler
 {
@@ -328,6 +329,29 @@ namespace CashFlow.Controler
         private void Dialog_CloseButton(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             dialog.Hide();
+        }
+
+        public async void showContent(String name)
+        {
+            if (name.Equals("acount"))
+            {
+                AccountInfo acc = new AccountInfo("test", 123, 12.233, 12.34);
+                String content = acc.ToString();
+
+                ContentDialog Dialog = new ContentDialog
+                {
+                    Title = "Acount info",
+                    Content = content
+                };
+                Dialog.PrimaryButtonText = "Close";
+                Dialog.PrimaryButtonClick += Dialog_PrimaryButtonClick;
+                await Dialog.ShowAsync();
+            }
+        }
+
+        private void Dialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            sender.Hide();
         }
 
         public async void Test()
