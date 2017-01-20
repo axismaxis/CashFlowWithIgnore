@@ -57,18 +57,19 @@ namespace CashFlow.GUI
 
         private async void page_Loaded(object sender, RoutedEventArgs args)
         {
-
             //Init map
-           
             mapController = new MapController(MyMap);
             gpsHandler = new GPSHandler();
-            mapController.InitMap();
             InitGPS();
-
+            mapController.InitMap();
+            await mapController.GetJsonBuildings();
+            drawGeofences();
         }
 
         private async void InitGPS()
         {
+            mapController.GeofenceEnteredEventTriggered += MapController_GeofenceEnteredEventTriggered;
+            mapController.GeofenceExitedEventTriggered += MapController_GeofenceExitedEventTriggered;
             bool succesfullConnect = await gpsHandler.RequestUserAccesAsync();
             if (succesfullConnect)
             {
@@ -77,17 +78,18 @@ namespace CashFlow.GUI
 
                 //Subscribe method for continuous location changes
                 gpsHandler.SubscribeToLocation(GpsHandler_positionChangedEvent);
+            }
+        }
 
-                if (mapController.buildingList.Count > 0)
+        private void drawGeofences()
+        {
+            if (mapController.buildingList.Count > 0)
+            {
+                foreach (Building b in mapController.buildingList)
                 {
-                    foreach (Building b in mapController.buildingList)
-                    {
-                        mapController.addGeofence(b.Posistion, 50, b.Name);
-                        mapController.DrawCircle(b.Posistion, 100);
-                    }
+                    mapController.addGeofence(b.Posistion, 50, b.Name);
+                    mapController.DrawCircle(b.Posistion, 100);
                 }
-                mapController.GeofenceEnteredEventTriggered += MapController_GeofenceEnteredEventTriggered;
-                mapController.GeofenceExitedEventTriggered += MapController_GeofenceExitedEventTriggered;
             }
         }
 

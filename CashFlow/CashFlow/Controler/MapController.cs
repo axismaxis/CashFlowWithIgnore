@@ -73,19 +73,17 @@ namespace CashFlow.Controler
             });
         }
 
-        public async Task InitMap()
+        public void InitMap()
         {
             _myMap.ColorScheme = MapColorScheme.Dark;
             _myMap.LandmarksVisible = true;
             _myMap.DesiredPitch = 55;
             _myMap.ZoomLevel = 17;
-           // Test();
-            GetJsonBuildings();
-            await Task.Delay(TimeSpan.FromSeconds(0.1));
-            getAccount();
-          //  await Task.Delay(TimeSpan.FromSeconds(1));
+        }
 
-            // Test();
+        public void initBuildings()
+        {
+            GetJsonBuildings();
         }
 
         public void addGeofence(BasicGeoposition position, double radius, string geofenceName)
@@ -103,21 +101,6 @@ namespace CashFlow.Controler
             {
                 geofences.Add(newGeofence);
             }
-        }
-
-        private void getAccount()
-        {
-            account = JsonSave.LoadPersonalDataFromJson().Result;
-            drawHome();
-            account.setEarnings(9999999);
-        }
-
-        private void drawHome()
-        {
-            BasicGeoposition position = new BasicGeoposition();
-            position.Latitude = account.getLatitude();
-            position.Longitude = account.getLongitude();
-            AddBuilding(new Home("Home",0,123,position,true ));
         }
 
         private Geofence GenerateGeofence(BasicGeoposition position, double radius, string geofenceName)
@@ -152,23 +135,27 @@ namespace CashFlow.Controler
             _myMap.MapElements.Add(shape);
         }
 
-        public async void GetJsonBuildings()
+        public async Task GetJsonBuildings()
          {
             try
             {
+                //Get buildings from json
                 buildingList = await JsonSave.getBuildingList();
 
+                //Add home location from json
+                account = await JsonSave.LoadPersonalDataFromJson();
+                BasicGeoposition position = new BasicGeoposition();
+                position.Latitude = account.getLatitude();
+                position.Longitude = account.getLongitude();
+                buildingList.Add(new Home("Home", 0, 123, position, true));
             }
             catch (Exception)
             {
-
-                Test();
-                GetJsonBuildings();            
+                //Test();
+                //GetJsonBuildings();            
             }
-            //await Task.Delay(TimeSpan.FromSeconds(1));
 
             DrawBuildingList(buildingList);
-
         }
 
         public void ClearMapMarkers()
