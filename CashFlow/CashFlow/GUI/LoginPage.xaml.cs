@@ -60,7 +60,7 @@ namespace CashFlow.GUI
                 //Subscribe method for continuous location changes
                 gpsHandler.SubscribeToLocation(GpsHandler_positionChangedEvent);
             }
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            //await Task.Delay(TimeSpan.FromSeconds(1));
             await loading();
         }
 
@@ -183,7 +183,7 @@ namespace CashFlow.GUI
             await JsonSave.SavePersonalDataToJson(accountList);
             MyMapLoginScreen.IsEnabled = false;
             this.Content = null;
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            //await Task.Delay(TimeSpan.FromSeconds(1));
             Frame.Navigate(typeof(BlankPage1));
         }
 

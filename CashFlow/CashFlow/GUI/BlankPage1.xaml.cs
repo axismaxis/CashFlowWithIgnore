@@ -41,7 +41,7 @@ namespace CashFlow.GUI
         {
             Frame.BackStack.Clear();
             await MapController.Test();
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(3));
             Frame mapFrame = new Frame();
             Window.Current.Content = mapFrame;
 

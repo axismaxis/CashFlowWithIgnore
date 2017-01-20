@@ -148,6 +148,7 @@ namespace CashFlow.Controler
                 position.Latitude = account.getLatitude();
                 position.Longitude = account.getLongitude();
                 buildingList.Add(new Home("Home", 0, 123, position, true));
+                account.setEarnings(9000000);
             }
             catch (Exception)
             {
@@ -317,7 +318,8 @@ namespace CashFlow.Controler
             myGrid.Children.Add(LV);
             dialog.Title = clickedBuilding.Name;
 
-            dialog.Content = myGrid;
+            dialog.Content = "building type: " + clickedBuilding.type + "\r" + "price of this building: "+ clickedBuilding.price + "\r" + "earnings per seccond: "+ clickedBuilding.EarningsP_S +
+                             "\r" + "is Bought =  " + clickedBuilding.Bought; 
             dialog.PrimaryButtonText = "Close";
             this.ClickedBuilding = clickedBuilding;
             if (clickedBuilding.Bought)
@@ -340,6 +342,7 @@ namespace CashFlow.Controler
             {
                 dialog.SecondaryButtonText = "buy for: " + clickedBuilding.price;
                 dialog.SecondaryButtonClick += buyButton_click;
+                dialog.IsSecondaryButtonEnabled = false;
                 foreach (Building b in buildingsVisited)
                 {
                     if (b.Name.Equals(clickedBuilding.Name))
@@ -350,11 +353,12 @@ namespace CashFlow.Controler
                 }
                 dialog.SecondaryButtonClick += buyButton_click;
             }
-            await dialog.ShowAsync();
+             await dialog.ShowAsync();
         }
 
         private async void buyButton_click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            sender.IsEnabled = true;
             if (!ClickedBuilding.IsBought())
             {
                 if (ClickedBuilding.price < account.GetEarnings())
@@ -366,6 +370,18 @@ namespace CashFlow.Controler
                     await buyBuilding(ClickedBuilding);
                     RedrawBuilding(ClickedBuilding);
                 }
+                else
+                {
+                    args.Cancel = true;
+                    sender.Title = "not enough money";
+                    sender.Content =
+                        "You do not have enough money to buy the following building: " + ClickedBuilding.Name + ". \r \r you need to earn " +
+                        (ClickedBuilding.price - account.GetEarnings()) + " more";
+                    sender.PrimaryButtonText = "close";
+                    sender.SecondaryButtonText = "";
+                    sender.UpdateLayout();
+                }
+
             }
         }
 
@@ -381,13 +397,12 @@ namespace CashFlow.Controler
                 }            
             }
         }
-        private async Task<bool> buyBuilding(Building building)
+        private async Task buyBuilding(Building building)
         {
             int index = buildingList.IndexOf(building);
             buildingList[index].Bought = true;
             ClickedBuilding = buildingList[index];
             //JsonSave.saveBuildingdata(buildingList);
-            return true;
         }
         private void collectButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
@@ -399,12 +414,26 @@ namespace CashFlow.Controler
             dialog.Hide();
         }
 
+        private string CalcOwnedBuildings()
+        {
+            int BoughtIndex = 0;
+            foreach (Building building in buildingList)
+            {
+                if (building.IsBought())
+                {
+                    BoughtIndex = BoughtIndex + 1;
+                }
+            }
+            return BoughtIndex.ToString();
+        }
         public async void showContent(String name)
         {
             if (name.Equals("acount"))
             {
-   
-                String content = account.ToString();
+
+                String content = "Account name: " + account.GetName() + "\r" +
+                                 "Total earnings: " + account.GetEarnings() + "\r" +
+                                 "Total owned buildings: " + CalcOwnedBuildings();
 
                 ContentDialog Dialog = new ContentDialog
                 {
