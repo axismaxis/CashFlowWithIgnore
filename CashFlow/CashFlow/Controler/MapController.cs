@@ -18,6 +18,7 @@ using Windows.Devices.Geolocation.Geofencing;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using CashFlow.Acount;
+using Windows.Storage;
 
 namespace CashFlow.Controler
 {
@@ -319,7 +320,7 @@ namespace CashFlow.Controler
             dialog.Title = clickedBuilding.Name;
 
             dialog.Content = "building type: " + clickedBuilding.type + "\r" + "price of this building: "+ clickedBuilding.price + "\r" + "earnings per seccond: "+ clickedBuilding.EarningsP_S +
-                             "\r" + "is Bought =  " + clickedBuilding.Bought; 
+                             "\r" + "is Bought =  " + clickedBuilding.Bought + "\r Date time: " + clickedBuilding.timeLastCollected.ToString(); 
             dialog.PrimaryButtonText = "Close";
             this.ClickedBuilding = clickedBuilding;
             if (clickedBuilding.Bought)
@@ -457,11 +458,14 @@ namespace CashFlow.Controler
             Debug.WriteLine("in test");
 
             List<Building> list = FillTest();
-            JsonSave.saveBuildingdata(list);
-
-
+            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+            var textFile = await localFolder.TryGetItemAsync("buildingData.json");
+            if(textFile == null)
+            {
+                JsonSave.saveBuildingdata(list);
+                Debug.WriteLine("File doesn't exist, making new file for buildings");
+            }
             return true;
-
         }
 
         public static List<Building> FillTest()

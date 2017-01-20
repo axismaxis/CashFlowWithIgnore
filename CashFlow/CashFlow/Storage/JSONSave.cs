@@ -212,7 +212,8 @@ namespace CashFlow.Storage
                     building.EarningsP_S,
                     building.Posistion,
                     building.Bought,
-                    building.type
+                    building.type,
+                    building.timeLastCollected
                 ));
             }
             return newList;
@@ -231,7 +232,8 @@ namespace CashFlow.Storage
                         building.Price,
                         building.Earnings,
                         building.Position,
-                        building.Bought
+                        building.Bought,
+                        DateTime.Parse(building.dateTimeAsString)
                             ));
                         break;
 
@@ -241,7 +243,8 @@ namespace CashFlow.Storage
                         building.Price,
                         building.Earnings,
                         building.Position,
-                        building.Bought
+                        building.Bought,
+                        DateTime.Parse(building.dateTimeAsString)
                             ));
                         break;
 
@@ -251,7 +254,8 @@ namespace CashFlow.Storage
                         building.Price,
                         building.Earnings,
                         building.Position,
-                        building.Bought
+                        building.Bought,
+                        DateTime.Parse(building.dateTimeAsString)
                             ));
                         break;
 
@@ -262,7 +266,8 @@ namespace CashFlow.Storage
                         building.Price,
                         building.Earnings,
                         building.Position,
-                        building.Bought
+                        building.Bought,
+                        DateTime.Parse(building.dateTimeAsString)
                             ));
                         break;
                 }
@@ -274,15 +279,15 @@ namespace CashFlow.Storage
 
     public class BuildingData
     {
-
         public string name { get; set; }
         public double Price { get; set; }
         public double Earnings { get; set; }
         public BasicGeoposition Position { get; set; }
         public bool Bought { get; set; }
         public Building.BuildingType Type { get; set; }
+        public string dateTimeAsString { get; set; }
 
-        public BuildingData(string name, double Price, double Earnings, BasicGeoposition Position, bool Bought, Building.BuildingType Type)
+        public BuildingData(string name, double Price, double Earnings, BasicGeoposition Position, bool Bought, Building.BuildingType Type, DateTime dateTimeAsDate)
         {
             this.name = name;
             this.Price = Price;
@@ -290,6 +295,7 @@ namespace CashFlow.Storage
             this.Position = Position;
             this.Bought = Bought;
             this.Type = Type;
+            this.dateTimeAsString = dateTimeAsDate.ToString();
         }
 
     }

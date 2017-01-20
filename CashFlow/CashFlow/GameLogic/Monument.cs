@@ -19,6 +19,17 @@ namespace CashFlow.GameLogic
             type = BuildingType.MonumentType;
         }
 
+        public Monument(string name, double price, double earnings, BasicGeoposition position, bool isBought, DateTime boughtTime) : base(name)
+        {
+            base.price = price;
+            EarningsP_S = earnings;
+            Posistion = position;
+            Bought = isBought;
+            Name = name;
+            type = BuildingType.WonderType;
+            timeLastCollected = boughtTime;
+        }
+
         public override double getPrice()
         {
             throw new System.NotImplementedException();
