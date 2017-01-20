@@ -40,6 +40,10 @@ namespace CashFlow.Acount
             return _earnings;
         }
 
+        public void setEarnings(double earnings)
+        {
+            _earnings = earnings;
+        }
         public double getLongitude()
         {
             return longitude;

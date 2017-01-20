@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
@@ -34,12 +35,13 @@ namespace CashFlow.Controler
         public event OnGeofenceTriggered GeofenceEnteredEventTriggered;
         public event OnGeofenceTriggered GeofenceExitedEventTriggered;
         private AccountInfo account;
+        private Building ClickedBuilding;
 
         public MapController(MapControl myMap)
         {
             this._myMap = myMap;
 
-           Debug.WriteLine("now in mappage");
+           Debug.WriteLine("now in mappage" + _myMap);
             dialog.Hide();
             dialog.FullSizeDesired = true;
             dialog.PrimaryButtonClick += Dialog_CloseButton;
@@ -71,14 +73,18 @@ namespace CashFlow.Controler
             });
         }
 
-        public void InitMap()
+        public async Task InitMap()
         {
             _myMap.ColorScheme = MapColorScheme.Dark;
             _myMap.LandmarksVisible = true;
             _myMap.DesiredPitch = 55;
             _myMap.ZoomLevel = 17;
+           // Test();
             GetJsonBuildings();
+            await Task.Delay(TimeSpan.FromSeconds(0.1));
             getAccount();
+          //  await Task.Delay(TimeSpan.FromSeconds(1));
+
             // Test();
         }
 
@@ -103,6 +109,7 @@ namespace CashFlow.Controler
         {
             account = JsonSave.LoadPersonalDataFromJson().Result;
             drawHome();
+            account.setEarnings(9999999);
         }
 
         private void drawHome()
@@ -146,7 +153,7 @@ namespace CashFlow.Controler
         }
 
         public async void GetJsonBuildings()
-        {
+         {
             try
             {
                 buildingList = await JsonSave.getBuildingList();
@@ -154,10 +161,12 @@ namespace CashFlow.Controler
             }
             catch (Exception)
             {
-                
-               Test();
-              Debug.WriteLine("no buildings found");
+
+                Test();
+                GetJsonBuildings();            
             }
+            //await Task.Delay(TimeSpan.FromSeconds(1));
+
             DrawBuildingList(buildingList);
 
         }
@@ -323,6 +332,7 @@ namespace CashFlow.Controler
 
             dialog.Content = myGrid;
             dialog.PrimaryButtonText = "Close";
+            this.ClickedBuilding = clickedBuilding;
             if (clickedBuilding.Bought)
             {
                 dialog.SecondaryButtonText = "Not in range";
@@ -343,13 +353,54 @@ namespace CashFlow.Controler
             {
                 dialog.SecondaryButtonText = "buy for: " + clickedBuilding.price;
                 dialog.SecondaryButtonClick += buyButton_click;
+                foreach (Building b in buildingsVisited)
+                {
+                    if (b.Name.Equals(clickedBuilding.Name))
+                    {
+                        dialog.IsSecondaryButtonEnabled = true;
+                        dialog.SecondaryButtonText = "buy for: " + clickedBuilding.price;
+                    }
+                }
+                dialog.SecondaryButtonClick += buyButton_click;
             }
             await dialog.ShowAsync();
         }
 
-        private void buyButton_click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private async void buyButton_click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            // new buy implementation
+            if (!ClickedBuilding.IsBought())
+            {
+                if (ClickedBuilding.price < account.GetEarnings())
+                {
+                    account.setEarnings(account.GetEarnings() - ClickedBuilding.price);
+                    List<AccountInfo> acc = new List<AccountInfo>();
+                    acc.Add(account);
+                    // await JsonSave.SavePersonalDataToJson(acc);
+                    await buyBuilding(ClickedBuilding);
+                    RedrawBuilding(ClickedBuilding);
+                }
+            }
+        }
+
+        private void RedrawBuilding(Building clickedBuilding)
+        {
+            foreach (MapElement mapElement in _myMap.MapElements)
+            {
+                if (mapElement.ReadData() == clickedBuilding)
+                {
+                    _myMap.MapElements.RemoveAt(_myMap.MapElements.IndexOf(mapElement));
+                    AddBuilding(clickedBuilding);
+                    break;
+                }            
+            }
+        }
+        private async Task<bool> buyBuilding(Building building)
+        {
+            int index = buildingList.IndexOf(building);
+            buildingList[index].Bought = true;
+            ClickedBuilding = buildingList[index];
+            //JsonSave.saveBuildingdata(buildingList);
+            return true;
         }
         private void collectButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
@@ -384,19 +435,21 @@ namespace CashFlow.Controler
             sender.Hide();
         }
 
-        public async void Test()
+        public static async Task<bool> Test()
         {
+            Debug.WriteLine("in test");
+
             List<Building> list = FillTest();
             JsonSave.saveBuildingdata(list);
 
-            list = await JsonSave.getBuildingList();
 
-            DrawBuildingList(list);
+            return true;
 
         }
 
-        public List<Building> FillTest()
+        public static List<Building> FillTest()
         {
+            Debug.WriteLine("filling building list");
             List<Building> list = new List<Building>();
 
             list.Add(new Wonder(

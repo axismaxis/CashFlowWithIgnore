@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Devices.Geolocation;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.Core;
+using Windows.UI.Notifications;
 using CashFlow.Acount;
 using CashFlow.GameLogic;
 using Newtonsoft.Json;
@@ -97,8 +100,8 @@ namespace CashFlow.Storage
             StorageFile textFile = await localFolder.GetFileAsync(PersonalDataFileName);
 
             using (IRandomAccessStream textStream = await textFile.OpenReadAsync())
-            {
-                // Read text stream     
+            {               
+                                 
                 using (DataReader textReader = new DataReader(textStream))
                 {
                     //get size                       
@@ -112,9 +115,10 @@ namespace CashFlow.Storage
 
 
                     AccountInfo accountInfoFromJsonFile = convertedUserList[0];
-                    // and show it                     
+                    // and show it         
+                    textStream.Dispose();
                     return accountInfoFromJsonFile;
-                }
+                } 
             }
         }
 
@@ -139,6 +143,8 @@ namespace CashFlow.Storage
                 }
             }
         }
+
+
 
         public static async Task<List<Building>> getBuildingList()
         {

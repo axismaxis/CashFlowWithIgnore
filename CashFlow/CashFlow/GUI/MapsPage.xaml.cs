@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -44,9 +45,7 @@ namespace CashFlow.GUI
         public MapsPage()
         {
             this.InitializeComponent();
-            mapController = new MapController(MyMap);
-            gpsHandler = new GPSHandler();
-            mapController.InitMap();
+            
             this.Loaded += page_Loaded;
             this.Unloaded += MapsPage_Unloaded;
         }
@@ -58,12 +57,20 @@ namespace CashFlow.GUI
 
         private async void page_Loaded(object sender, RoutedEventArgs args)
         {
+
             //Init map
            
+            mapController = new MapController(MyMap);
+            gpsHandler = new GPSHandler();
+            mapController.InitMap();
+            InitGPS();
 
-            //Init GPS
+        }
+
+        private async void InitGPS()
+        {
             bool succesfullConnect = await gpsHandler.RequestUserAccesAsync();
-            if(succesfullConnect)
+            if (succesfullConnect)
             {
                 //Init gpshandler with movement threshold
                 gpsHandler.InitGPSHandler(1);
@@ -71,17 +78,18 @@ namespace CashFlow.GUI
                 //Subscribe method for continuous location changes
                 gpsHandler.SubscribeToLocation(GpsHandler_positionChangedEvent);
 
-                foreach(Building b in mapController.buildingList)
+                if (mapController.buildingList.Count > 0)
                 {
-                    mapController.addGeofence(b.Posistion, 50, b.Name);
-                    mapController.DrawCircle(b.Posistion, 100);
+                    foreach (Building b in mapController.buildingList)
+                    {
+                        mapController.addGeofence(b.Posistion, 50, b.Name);
+                        mapController.DrawCircle(b.Posistion, 100);
+                    }
                 }
                 mapController.GeofenceEnteredEventTriggered += MapController_GeofenceEnteredEventTriggered;
                 mapController.GeofenceExitedEventTriggered += MapController_GeofenceExitedEventTriggered;
             }
         }
-
-        
 
         private void MapController_GeofenceEnteredEventTriggered(Geofence geofence)
         {
