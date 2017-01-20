@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using System.Diagnostics;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Maps;
 using CashFlow.GameLogic;
 
@@ -15,7 +17,16 @@ namespace CashFlow.Controler
 
         public static object GetObjectData(MapElement obj)
         {
-            return obj.GetValue(ObjectDataProperty);
+            try
+            {
+                return obj.GetValue(ObjectDataProperty);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                throw;
+            }
+           
         }
 
         public static void SetObjectData(

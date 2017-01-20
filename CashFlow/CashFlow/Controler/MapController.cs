@@ -381,6 +381,7 @@ namespace CashFlow.Controler
                     sender.PrimaryButtonText = "close";
                     sender.SecondaryButtonText = "";
                     sender.UpdateLayout();
+                    sender.FullSizeDesired = false;
                 }
 
             }
@@ -402,6 +403,12 @@ namespace CashFlow.Controler
         {
             int index = buildingList.IndexOf(building);
             buildingList[index].Bought = true;
+            if(ClickedBuilding.type == Building.BuildingType.HouseType)
+            buildingList[index].type = Building.BuildingType.HouseType;
+            if (ClickedBuilding.type == Building.BuildingType.MonumentType)
+                buildingList[index].type = Building.BuildingType.MonumentType;
+            if (ClickedBuilding.type == Building.BuildingType.WonderType)
+                buildingList[index].type = Building.BuildingType.WonderType;
             ClickedBuilding = buildingList[index];
             //JsonSave.saveBuildingdata(buildingList);
         }
@@ -482,7 +489,7 @@ namespace CashFlow.Controler
                 12000000,
                 2,
                 new BasicGeoposition { Longitude = 4.7752340, Latitude = 51.5890150 },
-                true
+                false
 
             ));
 
@@ -499,7 +506,7 @@ namespace CashFlow.Controler
                 190000,
                 1,
                 new BasicGeoposition { Latitude = 51.5849670, Longitude = 4.7788590 },
-                true
+                false
                 ));
             return list;
         }
