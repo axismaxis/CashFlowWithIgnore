@@ -20,13 +20,16 @@ namespace CashFlow.GameLogic
         public BasicGeoposition Posistion;
         [DataMember]
         public bool Bought;
-
-        [DataMember] public BuildingType type;
+        [DataMember]
+        public BuildingType type;
+        [DataMember]
+        public DateTime timeLastCollected;
 
 
         protected Building(string name)
         {
             Name = name;
+            timeLastCollected = DateTime.Now;
         }
         public abstract double getPrice();
 
