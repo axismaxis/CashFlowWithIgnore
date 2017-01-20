@@ -70,7 +70,7 @@ namespace CashFlow.GUI
             AccountInfo account = null;
             try
             {
-                account = JsonSave.LoadPersonalDataFromJson().Result;
+                account = await JsonSave.LoadPersonalDataFromJson();
                 //AccountInfo account = new AccountInfo("test",123,23.21,321.1);
                 await Task.Delay(TimeSpan.FromSeconds(2));
             }

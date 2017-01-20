@@ -419,7 +419,7 @@ namespace CashFlow.Controler
             int collectMoney = Convert.ToInt32(moneySpan.TotalSeconds * ClickedBuilding.EarningsP_S / 100);
             account.setEarnings(account.GetEarnings() + collectMoney);
             ClickedBuilding.timeLastCollected = DateTime.Now;
-            //JsonSave.saveBuildingdata(buildingList);
+            JsonSave.saveBuildingdata(buildingList);
         }
 
         private void Dialog_CloseButton(ContentDialog sender, ContentDialogButtonClickEventArgs args)
