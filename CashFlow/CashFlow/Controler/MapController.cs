@@ -380,6 +380,7 @@ namespace CashFlow.Controler
                     sender.PrimaryButtonText = "close";
                     sender.SecondaryButtonText = "";
                     sender.UpdateLayout();
+                    sender.FullSizeDesired = false;
                 }
 
             }
@@ -402,7 +403,7 @@ namespace CashFlow.Controler
             int index = buildingList.IndexOf(building);
             buildingList[index].Bought = true;
             ClickedBuilding = buildingList[index];
-            //JsonSave.saveBuildingdata(buildingList);
+            JsonSave.saveBuildingdata(buildingList);
         }
         private void collectButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
