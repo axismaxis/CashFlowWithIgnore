@@ -140,6 +140,7 @@ namespace CashFlow.Storage
                 {
                     textWriter.WriteString(jsonContents);
                     await textWriter.StoreAsync();
+                    await textWriter.FlushAsync();
                 }
             }
         }

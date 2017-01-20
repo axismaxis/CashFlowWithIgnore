@@ -320,7 +320,7 @@ namespace CashFlow.Controler
             dialog.Title = clickedBuilding.Name;
 
             dialog.Content = "building type: " + clickedBuilding.type + "\r" + "price of this building: "+ clickedBuilding.price + "\r" + "earnings per seccond: "+ clickedBuilding.EarningsP_S +
-                             "\r" + "is Bought =  " + clickedBuilding.Bought + "\r Date time: " + clickedBuilding.timeLastCollected.ToString(); 
+                             "\r" + "is Bought =  " + clickedBuilding.Bought + "\r Last time collected: " + clickedBuilding.timeLastCollected.ToString(); 
             dialog.PrimaryButtonText = "Close";
             this.ClickedBuilding = clickedBuilding;
             if (clickedBuilding.Bought)
@@ -333,7 +333,7 @@ namespace CashFlow.Controler
                     if (b.Name.Equals(clickedBuilding.Name))
                     {
                         dialog.IsSecondaryButtonEnabled = true;
-                        dialog.SecondaryButtonText = "Collect";
+                        dialog.SecondaryButtonText = "Collect: " + Convert.ToInt32((DateTime.Now - clickedBuilding.timeLastCollected).TotalSeconds * clickedBuilding.EarningsP_S / 100);
                     }
                 }
 
@@ -405,9 +405,14 @@ namespace CashFlow.Controler
             ClickedBuilding = buildingList[index];
             //JsonSave.saveBuildingdata(buildingList);
         }
+
         private void collectButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            //throw new NotImplementedException();
+            TimeSpan moneySpan = DateTime.Now - ClickedBuilding.timeLastCollected;
+            int collectMoney = Convert.ToInt32(moneySpan.TotalSeconds * ClickedBuilding.EarningsP_S / 100);
+            account.setEarnings(account.GetEarnings() + collectMoney);
+            ClickedBuilding.timeLastCollected = DateTime.Now;
+            //JsonSave.saveBuildingdata(buildingList);
         }
 
         private void Dialog_CloseButton(ContentDialog sender, ContentDialogButtonClickEventArgs args)
@@ -475,7 +480,7 @@ namespace CashFlow.Controler
             list.Add(new Wonder(
                 "Kerk van Breda",
                 12000000,
-                123,
+                2,
                 new BasicGeoposition { Longitude = 4.7752340, Latitude = 51.5890150 },
                 true
 
@@ -484,7 +489,7 @@ namespace CashFlow.Controler
             list.Add(new Monument(
                 "Chasse theater",
                 500000,
-                123,
+                1,
                 new BasicGeoposition { Longitude = 4.7818280, Latitude = 51.5873440 },
                 false
                 ));
@@ -492,7 +497,7 @@ namespace CashFlow.Controler
             list.Add(new House(
                 "keizerstraat 45",
                 190000,
-                123,
+                1,
                 new BasicGeoposition { Latitude = 51.5849670, Longitude = 4.7788590 },
                 true
                 ));
