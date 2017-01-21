@@ -114,7 +114,7 @@ namespace CashFlow.Storage
 
                 using (DataReader textReader = new DataReader(textStream))
                 {
-                    //get size                       
+                    //get size              s         
                     uint textLength = (uint)textStream.Size;
                     await textReader.LoadAsync(textLength);
                     // read it                    
