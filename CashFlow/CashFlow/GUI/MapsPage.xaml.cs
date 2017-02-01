@@ -149,11 +149,6 @@ namespace CashFlow.GUI
            
             Houses.SelectedIndex = -1;
             SplitView.IsPaneOpen = false;
-
         }
-
-       
     }
-
-
 }

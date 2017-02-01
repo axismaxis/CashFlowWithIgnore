@@ -12,6 +12,7 @@ using CashFlow.Acount;
 using CashFlow.GameLogic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace CashFlow.Storage
 {
@@ -21,6 +22,10 @@ namespace CashFlow.Storage
     {
         private const string PersonalDataFileName = "saveData.json";
         private const string BuildingDataFileName = "buildingData.json";
+
+        private static StorageFolder StorageFolder = ApplicationData.Current.LocalFolder;
+        private static StorageFile personalTextFile;
+        private static StorageFile buildingTextFile;
 
         //public static async Task<bool> FileExist()
         //{
@@ -70,41 +75,46 @@ namespace CashFlow.Storage
         //    }
         //}
 
-
         public static async Task<bool> SavePersonalDataToJson(List<AccountInfo> list)
         {
             // Serialize our Product class into a string
             // Changed to serialze the List
 
             // Get the app data folder and create or replace the file we are storing the JSON in.
-            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-            StorageFile textFile = await localFolder.CreateFileAsync(PersonalDataFileName, CreationCollisionOption.ReplaceExisting);
+            if (personalTextFile == null)
+            {
+                personalTextFile = await StorageFolder.CreateFileAsync(PersonalDataFileName, CreationCollisionOption.ReplaceExisting);
+            }
 
             // Open the file...
-
             string jsonContents = JsonConvert.SerializeObject(UserToUserData(list));
-            using (IRandomAccessStream mysteream = await textFile.OpenAsync(FileAccessMode.ReadWrite))
+            var stream = await personalTextFile.OpenAsync(FileAccessMode.ReadWrite);
+            using (var outputStream = stream.GetOutputStreamAt(0))
             {
-                using (DataWriter textWriter = new DataWriter(mysteream))
+                using (var dataWriter = new Windows.Storage.Streams.DataWriter(outputStream))
                 {
-                    textWriter.WriteString(jsonContents);
-                    await textWriter.StoreAsync();
+                    dataWriter.WriteString(jsonContents);
+                    await dataWriter.StoreAsync();
+                    await outputStream.FlushAsync();
                 }
             }
+            stream.Dispose();
             return true;
         }
 
         public static async Task<AccountInfo> LoadPersonalDataFromJson()
         {
-            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-            StorageFile textFile = await localFolder.GetFileAsync(PersonalDataFileName);
+            if (personalTextFile == null)
+            {
+                personalTextFile = await StorageFolder.CreateFileAsync(PersonalDataFileName, CreationCollisionOption.ReplaceExisting);
+            }
 
-            using (IRandomAccessStream textStream = await textFile.OpenReadAsync())
-            {               
-                                 
+            using (IRandomAccessStream textStream = await personalTextFile.OpenReadAsync())
+            {
+
                 using (DataReader textReader = new DataReader(textStream))
                 {
-                    //get size                       
+                    //get size              s         
                     uint textLength = (uint)textStream.Size;
                     await textReader.LoadAsync(textLength);
                     // read it                    
@@ -118,7 +128,7 @@ namespace CashFlow.Storage
                     // and show it         
                     textStream.Dispose();
                     return accountInfoFromJsonFile;
-                } 
+                }
             }
         }
 
@@ -128,54 +138,56 @@ namespace CashFlow.Storage
             // Changed to serialze the List
 
             // Get the app data folder and create or replace the file we are storing the JSON in.
-            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-            StorageFile textFile = await localFolder.CreateFileAsync(BuildingDataFileName, CreationCollisionOption.ReplaceExisting);
+            if (buildingTextFile == null)
+            {
+                buildingTextFile = await StorageFolder.CreateFileAsync(BuildingDataFileName, CreationCollisionOption.ReplaceExisting);
+            }
 
             // Open the file...
 
             string jsonContents = JsonConvert.SerializeObject(BuildingToBuildingData(list));
-            using (IRandomAccessStream mysteream = await textFile.OpenAsync(FileAccessMode.ReadWrite))
-            {
-                using (DataWriter textWriter = new DataWriter(mysteream))
-                {
-                    textWriter.WriteString(jsonContents);
-                    await textWriter.StoreAsync();
-                    await textWriter.FlushAsync();
-                }
-            }
+
+            //IRandomAccessStream myStream = await textFile.OpenAsync(FileAccessMode.ReadWrite);
+            //DataWriter textWriter = new DataWriter(myStream);
+
+            await FileIO.WriteTextAsync(buildingTextFile, jsonContents);
+            //textWriter.WriteString(jsonContents);
+            //await textWriter.StoreAsync();
+
+            //await textWriter.FlushAsync();
+            //textWriter.Dispose();
+            //await myStream.FlushAsync();
+            //myStream.Dispose();
+
+            Debug.WriteLine("Buildings have been saved");
         }
-
-
 
         public static async Task<List<Building>> getBuildingList()
         {
-
-            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-            StorageFile textFile = await localFolder.GetFileAsync(BuildingDataFileName);
-
-            using (IRandomAccessStream textStream = await textFile.OpenReadAsync())
+            if (buildingTextFile == null)
             {
-                // Read text stream     
-                using (DataReader textReader = new DataReader(textStream))
-                {
-                    //get size                       
-                    uint textLength = (uint)textStream.Size;
-                    await textReader.LoadAsync(textLength);
-                    // read it                    
-                    string jsonContents = textReader.ReadString(textLength);
-                    // deserialize back to our product!  
-                    // List<Building> BuildingList = JsonConvert.DeserializeObject<List<Building>>(jsonContents);
-
-
-                    List<BuildingData> BuildingList = JsonConvert.DeserializeObject<List<BuildingData>>(jsonContents);
-
-                    List<Building> ConvertedBuildingList = BuildingDataToBuilding(BuildingList);
-                    // and show it    
-
-                    return ConvertedBuildingList;
-
-                }
+                buildingTextFile = await StorageFolder.CreateFileAsync(BuildingDataFileName, CreationCollisionOption.ReplaceExisting);
             }
+
+            //IRandomAccessStream textStream = await textFile.OpenReadAsync();
+            //DataReader textReader = new DataReader(textStream);
+
+            //get size                       
+            //uint textLength = (uint)textStream.Size;
+            //await textReader.LoadAsync(textLength);
+            // read it                    
+            //string jsonContents = textReader.ReadString(textLength);
+            string jsonContents = await Windows.Storage.FileIO.ReadTextAsync(buildingTextFile);
+            // deserialize back to our product!  
+            // List<Building> BuildingList = JsonConvert.DeserializeObject<List<Building>>(jsonContents);
+
+            List<BuildingData> BuildingList = JsonConvert.DeserializeObject<List<BuildingData>>(jsonContents);
+            List<Building> ConvertedBuildingList = BuildingDataToBuilding(BuildingList);
+            //await textStream.FlushAsync();
+            //textStream.Dispose();
+            //textReader.Dispose();
+
+            return ConvertedBuildingList;
         }
 
         public static List<userData> UserToUserData(List<AccountInfo> list)
@@ -184,7 +196,7 @@ namespace CashFlow.Storage
 
             foreach (AccountInfo accountInfo in list)
             {
-                newuserList.Add(new userData( accountInfo.GetName(), accountInfo.GetEarnings(), accountInfo.getLongitude(), accountInfo.getLatitude()));
+                newuserList.Add(new userData(accountInfo.GetName(), accountInfo.GetEarnings(), accountInfo.getLongitude(), accountInfo.getLatitude()));
             }
             return newuserList;
         }
@@ -302,7 +314,7 @@ namespace CashFlow.Storage
     }
     public class userData
     {
-        public string userName {get; set;}
+        public string userName { get; set; }
         public double earnings { get; set; }
         public double longitude { get; set; }
         public double latitude { get; set; }
