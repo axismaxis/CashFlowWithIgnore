@@ -309,31 +309,25 @@ namespace CashFlow.Controler
         public async void OnMapElementCLick(MapControl sender, MapElementClickEventArgs args, List<Building> buildingsVisited)
         {
             MapIcon myClickedIcon = args.MapElements.FirstOrDefault(x => x is MapIcon) as MapIcon;
-            Building clickedBuilding = myClickedIcon.ReadData();
-            Grid myGrid = new Grid();
-            ListView LV = new ListView();
+            Building buildingClickedBuffer = myClickedIcon.ReadData();
 
-            LV.DataContext = clickedBuilding.type + "\r" + clickedBuilding.price + "\r" + clickedBuilding.EarningsP_S +
-                             "\r" + "gekocht: " + clickedBuilding.Bought;
-           
-            myGrid.Children.Add(LV);
-            dialog.Title = clickedBuilding.Name;
+            dialog.Title = buildingClickedBuffer.Name;
 
-            dialog.Content = "building type: " + clickedBuilding.type + "\r" + "price of this building: "+ clickedBuilding.price + "\r" + "earnings per seccond: "+ clickedBuilding.EarningsP_S +
-                             "\r" + "is Bought =  " + clickedBuilding.Bought + "\r Last time collected: " + clickedBuilding.timeLastCollected.ToString(); 
+            dialog.Content = "building type: " + buildingClickedBuffer.GetBuidlingType() + "\r" + "price of this building: "+ buildingClickedBuffer.price + "\r" + "earnings per seccond: "+ buildingClickedBuffer.EarningsP_S +
+                             "\r" + "is Bought =  " + buildingClickedBuffer.Bought + "\r Last time collected: " + buildingClickedBuffer.timeLastCollected.ToString(); 
             dialog.PrimaryButtonText = "Close";
-            this.ClickedBuilding = clickedBuilding;
-            if (clickedBuilding.Bought)
+            this.ClickedBuilding = buildingClickedBuffer;
+            if (buildingClickedBuffer.Bought)
             {
                 dialog.SecondaryButtonText = "Not in range";
 
                 dialog.IsSecondaryButtonEnabled = false;
                 foreach (Building b in buildingsVisited)
                 {
-                    if (b.Name.Equals(clickedBuilding.Name))
+                    if (b.Name.Equals(buildingClickedBuffer.Name))
                     {
                         dialog.IsSecondaryButtonEnabled = true;
-                        dialog.SecondaryButtonText = "Collect: " + Convert.ToInt32((DateTime.Now - clickedBuilding.timeLastCollected).TotalSeconds * clickedBuilding.EarningsP_S / 100);
+                        dialog.SecondaryButtonText = "Collect: " + Convert.ToInt32((DateTime.Now - buildingClickedBuffer.timeLastCollected).TotalSeconds * buildingClickedBuffer.EarningsP_S / 100);
                     }
                 }
 
@@ -341,15 +335,15 @@ namespace CashFlow.Controler
             }
             else
             {
-                dialog.SecondaryButtonText = "buy for: " + clickedBuilding.price;
+                dialog.SecondaryButtonText = "buy for: " + buildingClickedBuffer.price;
                 dialog.SecondaryButtonClick += buyButton_click;
                 dialog.IsSecondaryButtonEnabled = false;
                 foreach (Building b in buildingsVisited)
                 {
-                    if (b.Name.Equals(clickedBuilding.Name))
+                    if (b.Name.Equals(buildingClickedBuffer.Name))
                     {
                         dialog.IsSecondaryButtonEnabled = true;
-                        dialog.SecondaryButtonText = "buy for: " + clickedBuilding.price;
+                        dialog.SecondaryButtonText = "buy for: " + buildingClickedBuffer.price;
                     }
                 }
                 dialog.SecondaryButtonClick += buyButton_click;
@@ -395,6 +389,7 @@ namespace CashFlow.Controler
                 {
                     _myMap.MapElements.RemoveAt(_myMap.MapElements.IndexOf(mapElement));
                     AddBuilding(clickedBuilding);
+                    
                     break;
                 }            
             }
@@ -402,15 +397,20 @@ namespace CashFlow.Controler
         private async Task buyBuilding(Building building)
         {
             int index = buildingList.IndexOf(building);
-            buildingList[index].Bought = true;
-            if(ClickedBuilding.type == Building.BuildingType.HouseType)
-            buildingList[index].type = Building.BuildingType.HouseType;
-            if (ClickedBuilding.type == Building.BuildingType.MonumentType)
-                buildingList[index].type = Building.BuildingType.MonumentType;
-            if (ClickedBuilding.type == Building.BuildingType.WonderType)
-                buildingList[index].type = Building.BuildingType.WonderType;
-            ClickedBuilding = buildingList[index];
-            //JsonSave.saveBuildingdata(buildingList);
+            building.GetBuidlingType();
+            RedrawBuilding(building);
+            buildingList.RemoveAt(index);
+            
+
+            if(ClickedBuilding.GetBuidlingType().Equals(Building.BuildingType.WonderType))
+                buildingList.Add(new Wonder(ClickedBuilding.Name, ClickedBuilding.price, ClickedBuilding.EarningsP_S, ClickedBuilding.Posistion , true));
+            else if (ClickedBuilding.GetBuidlingType().Equals(Building.BuildingType.HouseType))
+                buildingList.Add(new House(ClickedBuilding.Name, ClickedBuilding.price, ClickedBuilding.EarningsP_S, ClickedBuilding.Posistion, true));
+            else if (ClickedBuilding.GetBuidlingType().Equals(Building.BuildingType.MonumentType))
+                buildingList.Add(new Monument(ClickedBuilding.Name, ClickedBuilding.price, ClickedBuilding.EarningsP_S, ClickedBuilding.Posistion, true));
+
+            ClickedBuilding = buildingList.Last();
+            JsonSave.saveBuildingdata(buildingList);
         }
 
         private void collectButton_Click(ContentDialog sender, ContentDialogButtonClickEventArgs args)
@@ -486,7 +486,7 @@ namespace CashFlow.Controler
 
             list.Add(new Wonder(
                 "Kerk van Breda",
-                12000000,
+                1200000,
                 2,
                 new BasicGeoposition { Longitude = 4.7752340, Latitude = 51.5890150 },
                 false
